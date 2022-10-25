@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bluetooth_basic/flutter_bluetooth_basic.dart';
 import 'package:qr_code_scanner/model/model_db.dart';
-import 'package:qr_code_scanner/preference/printer_option_pref.dart';
 import 'package:qr_code_scanner/preference/printer_ip_pref_dart';
+import 'package:qr_code_scanner/preference/printer_option_pref.dart';
 
 import 'db_helper.dart';
 import 'preference/printer_pref.dart';
@@ -118,9 +118,11 @@ class MainBloc extends ChangeNotifier {
     printer.text('${item?.name}');
     printer.text('${item?.position}');
     printer.text('${item?.company}');
-    printer.qrcode(
-      '${item?.prefix}/${item?.name}/${item?.position}/${item?.company}/${item?.type}/${item?.email}/${item?.phone}',
-    );
+    if (isChecked == true) {
+      printer.qrcode(
+          '${item?.prefix}/${item?.name}/${item?.position}/${item?.company}/${item?.type}/${item?.email}/${item?.phone}',
+          size: QRSize.Size8);
+    }
 
     printer.feed(2);
     printer.cut();
@@ -178,9 +180,12 @@ class MainBloc extends ChangeNotifier {
         ),
         linesAfter: 1);
 
-    bytes += generator.qrcode(
-      '${data.prefix}/${data.name}/${data.position}/${data.company}/${data.type}/${data.email}/${data.phone}',
-    );
+    if (isChecked == true) {
+      bytes += generator.qrcode(
+        '${data.prefix}/${data.name}/${data.position}/${data.company}/${data.type}/${data.email}/${data.phone}',
+        size: QRSize.Size8,
+      );
+    }
 
     // bytes += generator.text('Reverse text', styles: PosStyles(reverse: true));
     // bytes += generator.text('Underlined text',

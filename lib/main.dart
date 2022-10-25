@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:qr_code_scanner/main_bloc.dart';
 import 'package:qr_code_scanner/model/model_db.dart';
-import 'package:qr_code_scanner/setting.dart';
+import 'package:qr_code_scanner/setting/setting.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 void main() async {
@@ -204,10 +204,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         SizedBox(
                           width: 28,
                           height: 28,
-                          child: Checkbox(
-                            value: _bloc.isChecked,
-                            onChanged: (bool? value) => _bloc.onQrCodeChecked(
-                              value,
+                          child: AnimatedBuilder(
+                            animation: _bloc,
+                            builder: (context, child) => Checkbox(
+                              value: _bloc.isChecked,
+                              onChanged: (bool? value) => _bloc.onQrCodeChecked(
+                                value,
+                              ),
                             ),
                           ),
                         ),
@@ -220,25 +223,30 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     const SizedBox(height: 5),
                     AnimatedBuilder(
-                        animation: _bloc,
-                        builder: ((context, child) => QrImage(
+                      animation: _bloc,
+                      builder: ((context, child) => _bloc.isChecked == true
+                          ? QrImage(
                               data:
                                   "${_bloc.item?.prefix}/${_bloc.item?.name}/${_bloc.item?.position}/${_bloc.item?.company}/${_bloc.item?.type}/${_bloc.item?.email}/${_bloc.item?.phone}",
-                              size: 200,
-                            ))),
+                              size: 150,
+                            )
+                          : Container()),
+                    ),
                   ],
                 ),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30),
+            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
             child: SizedBox(
               width: double.infinity,
               height: 50,
               child: TextButton.icon(
                 onPressed: () {
-                  _bloc.printInfo();
+                  if (_bloc.item != null) {
+                    _bloc.printInfo();
+                  }
                 },
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.blue,

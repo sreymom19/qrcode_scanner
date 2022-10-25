@@ -1,17 +1,13 @@
+import 'dart:io';
+
 import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'dart:typed_data';
-import 'package:qr_code_scanner/imagestorbyte.dart';
 import 'package:qr_code_scanner/preference/printer.dart';
 import 'package:qr_code_scanner/preference/printer_option_pref.dart';
 import 'package:qr_code_scanner/preference/printer_pref.dart';
-import 'package:qr_code_scanner/receipt.dart';
-import 'package:qr_code_scanner/setting_bloc.dart';
+import 'package:qr_code_scanner/setting/setting_bloc.dart';
 import 'package:screenshot/screenshot.dart';
-import 'package:esc_pos_printer/esc_pos_printer.dart';
-import 'package:esc_pos_utils/esc_pos_utils.dart';
-import 'dart:io';
 
 class SettingPage extends StatefulWidget {
   const SettingPage({Key? key}) : super(key: key);
@@ -25,12 +21,14 @@ class _SettingPageState extends State<SettingPage> {
   ScreenshotController screenshotController = ScreenshotController();
   String dir = Directory.current.path;
 
+  final _bloc = SettingBloc();
   final PrinterBluetoothManager _printerManager = PrinterBluetoothManager();
   List<PrinterBluetooth> _devices = [];
   String? _deviceMsg;
 
   @override
   void initState() {
+    _bloc.init();
     initPrinter();
     super.initState();
   }
@@ -46,42 +44,6 @@ class _SettingPageState extends State<SettingPage> {
       if (_devices.isEmpty) setState(() => _deviceMsg = "No Devices!");
     });
   }
-
-  // void testPrint(String printerIp, Uint8List theimageThatComesfr) async {
-  //   print("im inside the test print 2");
-  //   // TODO Don't forget to choose printer's paper size
-  //   const PaperSize paper = PaperSize.mm80;
-  //   final profile = await CapabilityProfile.load();
-  //   final printer = NetworkPrinter(paper, profile);
-
-  //   final PosPrintResult res = await printer.connect(printerIp, port: 9100);
-
-  //   if (res == PosPrintResult.success) {
-  //     // DEMO RECEIPT
-  //     await testReceipt(printer, theimageThatComesfr);
-  //     print(res.msg);
-  //     await Future.delayed(const Duration(seconds: 3), () {
-  //       print("prinnter desconect");
-  //       printer.disconnect();
-  //     });
-  //   }
-  // }
-
-  // void printNetwork(Function() onPrint) {
-  //   screenshotController
-  //       .capture(delay: const Duration(milliseconds: 10))
-  //       .then((capturedImage) async {
-  //     theimageThatComesfromThePrinter = capturedImage!;
-  //     setState(() {
-  //       theimageThatComesfromThePrinter = capturedImage;
-  //       testPrint(Printerprint.text, theimageThatComesfromThePrinter);
-  //     });
-  //   }).catchError((onError) {
-  //     print(onError);
-  //   });
-  // }
-
-  final _bloc = SettingBloc();
 
   @override
   void dispose() {
@@ -101,12 +63,17 @@ class _SettingPageState extends State<SettingPage> {
             child: SingleChildScrollView(
               child: Column(
                 children: [
-                  RadioListTile(
-                    title: const Text('Network'),
-                    value: "Network",
-                    groupValue: printerType,
-                    onChanged: (value) =>
-                        _bloc.setPrinterOption(PrinterOption.wifi.name),
+                  AnimatedBuilder(
+                    animation: _bloc,
+                    builder: (context, child) => RadioListTile(
+                      title: const Text('Network'),
+                      value: PrinterOption.wifi,
+                      groupValue: _bloc.printerOption,
+                      onChanged: (value) => _bloc.selectedPrinterOption(
+                        context,
+                        value,
+                      ),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(left: 65, right: 20),
@@ -114,18 +81,26 @@ class _SettingPageState extends State<SettingPage> {
                       controller: _bloc.printerIpController,
                       decoration: const InputDecoration(
                         hintText: 'IP Address',
-                        hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
+                        hintStyle:
+                            TextStyle(color: Colors.black38, fontSize: 15),
                       ),
                       textInputAction: TextInputAction.done,
-                      onSubmitted: (value) => _bloc.setPrinterIp(value),
+                      onSubmitted: (value) {
+                        _bloc.savePrinterIp(value);
+                        _bloc.toastMsg(context, "Select Wi-Fi Printer");
+                      },
                     ),
                   ),
-                  RadioListTile(
-                    title: const Text('Bluetooth'),
-                    value: "Bluetooth",
-                    groupValue: printerType,
-                    onChanged: (value) => _bloc.setPrinterOption(
-                      PrinterOption.bluetooth.name,
+                  AnimatedBuilder(
+                    animation: _bloc,
+                    builder: (context, child) => RadioListTile(
+                      title: const Text('Bluetooth'),
+                      value: PrinterOption.bluetooth,
+                      groupValue: _bloc.printerOption,
+                      onChanged: (value) => _bloc.selectedPrinterOption(
+                        context,
+                        value,
+                      ),
                     ),
                   ),
                   _devices.isEmpty
@@ -133,7 +108,7 @@ class _SettingPageState extends State<SettingPage> {
                           child: Text(_deviceMsg ?? ""),
                         )
                       : ListView.builder(
-                        shrinkWrap: true,
+                          shrinkWrap: true,
                           itemBuilder: ((context, index) {
                             return ListTile(
                               leading: const Icon(Icons.print),
@@ -146,6 +121,8 @@ class _SettingPageState extends State<SettingPage> {
                                   type: _devices[index].type,
                                 );
                                 selectedPrinter(printer);
+                                _bloc.toastMsg(
+                                    context, "Select Bluetooth Printer");
                               },
                             );
                           }),
@@ -201,4 +178,11 @@ class _SettingPageState extends State<SettingPage> {
       ),
     );
   }
+}
+
+class TimeValue {
+  final int _key;
+  final String _value;
+
+  TimeValue(this._key, this._value);
 }
