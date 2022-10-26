@@ -122,7 +122,9 @@ class _SettingPageState extends State<SettingPage> {
                                 );
                                 selectedPrinter(printer);
                                 _bloc.toastMsg(
-                                    context, "Select Bluetooth Printer");
+                                  context,
+                                  "Select Bluetooth Printer",
+                                );
                               },
                             );
                           }),
@@ -152,7 +154,7 @@ class _SettingPageState extends State<SettingPage> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 TextButton(
-                  onPressed: () {},
+                  onPressed: () => _bloc.downloadFile(),
                   style: TextButton.styleFrom(
                     backgroundColor: Colors.blue,
                   ),

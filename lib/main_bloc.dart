@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bluetooth_basic/flutter_bluetooth_basic.dart';
 import 'package:qr_code_scanner/model/model_db.dart';
-import 'package:qr_code_scanner/preference/printer_ip_pref_dart';
+import 'package:qr_code_scanner/preference/printer_ip_pref.dart';
 import 'package:qr_code_scanner/preference/printer_option_pref.dart';
 
 import 'db_helper.dart';
