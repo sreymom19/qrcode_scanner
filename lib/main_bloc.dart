@@ -92,36 +92,52 @@ class MainBloc extends ChangeNotifier {
   }
 
   void testPrintIp(network.NetworkPrinter printer) {
+    // printer.text(
+    //     'Regular: aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ');
+    // printer.text('Special 1: àÀ èÈ éÉ ûÛ üÜ çÇ ôÔ',
+    //     styles: const PosStyles(codeTable: 'CP1252'));
+    // printer.text('Special 2: blåbærgrød',
+    //     styles: const PosStyles(codeTable: 'CP1252'));
+
+    // printer.text('Bold text', styles: const PosStyles(bold: true));
+    // printer.text('Reverse text', styles: const PosStyles(reverse: true));
+    // printer.text('Underlined text',
+    //     styles: const PosStyles(underline: true), linesAfter: 1);
+    // printer.text('Align left', styles: const PosStyles(align: PosAlign.left));
+    // printer.text('Align center',
+    //     styles: const PosStyles(align: PosAlign.center));
+    // printer.text('Align right',
+    //     styles: const PosStyles(align: PosAlign.right), linesAfter: 1);
+
+    // printer.text('Text size 200%',
+    //     styles: const PosStyles(
+    //       height: PosTextSize.size2,
+    //       width: PosTextSize.size2,
+    //     ));
     printer.text(
-        'Regular: aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ');
-    printer.text('Special 1: àÀ èÈ éÉ ûÛ üÜ çÇ ôÔ',
-        styles: const PosStyles(codeTable: 'CP1252'));
-    printer.text('Special 2: blåbærgrød',
-        styles: const PosStyles(codeTable: 'CP1252'));
-
-    printer.text('Bold text', styles: const PosStyles(bold: true));
-    printer.text('Reverse text', styles: const PosStyles(reverse: true));
-    printer.text('Underlined text',
-        styles: const PosStyles(underline: true), linesAfter: 1);
-    printer.text('Align left', styles: const PosStyles(align: PosAlign.left));
-    printer.text('Align center',
-        styles: const PosStyles(align: PosAlign.center));
-    printer.text('Align right',
-        styles: const PosStyles(align: PosAlign.right), linesAfter: 1);
-
-    printer.text('Text size 200%',
-        styles: const PosStyles(
-          height: PosTextSize.size2,
-          width: PosTextSize.size2,
-        ));
-    printer.text('${item?.prefix}');
-    printer.text('${item?.name}');
-    printer.text('${item?.position}');
-    printer.text('${item?.company}');
+      '${item?.prefix}',
+      styles: const PosStyles(
+          bold: true, height: PosTextSize.size2, width: PosTextSize.size2),
+    );
+    printer.text(
+      '${item?.name}',
+      styles: const PosStyles(
+          bold: true, height: PosTextSize.size2, width: PosTextSize.size2),
+    );
+    printer.text(
+      '${item?.position}',
+      styles: const PosStyles(
+          bold: true, height: PosTextSize.size2, width: PosTextSize.size2),
+    );
+    printer.text(
+      '${item?.company}',
+      styles: const PosStyles(
+          bold: true, height: PosTextSize.size2, width: PosTextSize.size2),
+    );
     if (isChecked == true) {
       printer.qrcode(
           '${item?.prefix}/${item?.name}/${item?.position}/${item?.company}/${item?.type}/${item?.email}/${item?.phone}',
-          size: QRSize.Size8);
+          size: QRSize.Size6);
     }
 
     printer.feed(2);
@@ -160,30 +176,32 @@ class MainBloc extends ChangeNotifier {
         styles: const PosStyles(
           bold: true,
           align: PosAlign.left,
-          height: PosTextSize.size3,
-          width: PosTextSize.size3,
+          height: PosTextSize.size2,
+          width: PosTextSize.size2,
         ),
         linesAfter: 1);
     // bytes += generator.text(data.name, styles: PosStyles(bold: true));
     bytes += generator.text(data.position,
         styles: const PosStyles(
+          align: PosAlign.left,
           bold: true,
-          height: PosTextSize.size3,
-          width: PosTextSize.size3,
+          height: PosTextSize.size2,
+          width: PosTextSize.size2,
         ),
         linesAfter: 1);
     bytes += generator.text(data.company,
         styles: const PosStyles(
+          align: PosAlign.left,
           bold: true,
-          height: PosTextSize.size3,
-          width: PosTextSize.size3,
+          height: PosTextSize.size2,
+          width: PosTextSize.size2,
         ),
         linesAfter: 1);
 
     if (isChecked == true) {
       bytes += generator.qrcode(
         '${data.prefix}/${data.name}/${data.position}/${data.company}/${data.type}/${data.email}/${data.phone}',
-        size: QRSize.Size8,
+        size: QRSize.Size6,
       );
     }
 

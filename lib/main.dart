@@ -62,8 +62,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               );
             },
-            icon: const Icon(Icons.info_outline),
-            iconSize: 25,
+            icon: const Icon(Icons.settings),
+            iconSize: 28,
           ),
           // IconButton(
           //   onPressed: () => Navigator.push(context,
@@ -88,25 +88,25 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
               },
             ),
-            iconSize: 25.0,
+            iconSize: 28.0,
             onPressed: () => cameraController.toggleTorch(),
           ),
-          IconButton(
-            color: Colors.white,
-            icon: ValueListenableBuilder(
-              valueListenable: cameraController.cameraFacingState,
-              builder: (context, state, child) {
-                switch (state) {
-                  case CameraFacing.front:
-                    return const Icon(Icons.camera_front);
-                  case CameraFacing.back:
-                    return const Icon(Icons.camera_rear);
-                }
-              },
-            ),
-            iconSize: 25.0,
-            onPressed: () => cameraController.switchCamera(),
-          ),
+          // IconButton(
+          //   color: Colors.white,
+          //   icon: ValueListenableBuilder(
+          //     valueListenable: cameraController.cameraFacingState,
+          //     builder: (context, state, child) {
+          //       switch (state) {
+          //         case CameraFacing.front:
+          //           return const Icon(Icons.camera_front);
+          //         case CameraFacing.back:
+          //           return const Icon(Icons.camera_rear);
+          //       }
+          //     },
+          //   ),
+          //   iconSize: 25.0,
+          //   onPressed: () => cameraController.switchCamera(),
+          // ),
         ],
       ),
       body: Column(

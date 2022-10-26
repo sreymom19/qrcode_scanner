@@ -67,4 +67,11 @@ class DatabaseHelper {
       return ModelDB.fromMap(maps[index]);
     });
   }
+
+  rawDelete(String s) {}
+
+  Future<void> delete() async {
+    final db = await database;
+    await db?.delete(table);
+  }
 }
