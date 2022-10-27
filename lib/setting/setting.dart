@@ -22,7 +22,6 @@ class _SettingPageState extends State<SettingPage> {
   String? printerType;
   ScreenshotController screenshotController = ScreenshotController();
   String dir = Directory.current.path;
-  ModelDB? getAlldata;
 
   final _bloc = SettingBloc();
   final PrinterBluetoothManager _printerManager = PrinterBluetoothManager();
@@ -60,149 +59,166 @@ class _SettingPageState extends State<SettingPage> {
       appBar: AppBar(
         title: const Text('Setting'),
       ),
-      body: Column(
-        children: [
-          const Padding(padding: EdgeInsets.only(top: 20)),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Row(
-                children: [
-                  AnimatedBuilder(
-                    animation: _bloc,
-                    builder: (context, child) => Radio(
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Padding(padding: EdgeInsets.only(top: 20)),
+            const Text(
+              "Select Printer Option:",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Row(
+              children: [
+                Row(
+                  children: [
+                    AnimatedBuilder(
+                      animation: _bloc,
+                      builder: (context, child) => Radio(
                         value: PrinterOption.wifi,
                         groupValue: _bloc.printerOption,
                         onChanged: (value) => _bloc.selectedPrinterOption(
-                              context,
-                              value,
-                            )),
-                  ),
-                  const Text('Network'),
-                ],
-              ),
-              Row(
-                children: [
-                  AnimatedBuilder(
-                    animation: _bloc,
-                    builder: (context, child) => Radio(
-                      value: PrinterOption.bluetooth,
-                      groupValue: _bloc.printerOption,
-                      onChanged: (value) => _bloc.selectedPrinterOption(
-                        context,
-                        value,
-                      ),
-                    ),
-                  ),
-                  const Text('Bluetooth'),
-                ],
-              ),
-            ],
-          ),
-          Expanded(
-            child: AnimatedBuilder(
-              animation: _bloc,
-              builder: (context, child) => _bloc.printerOption ==
-                      PrinterOption.wifi
-                  ? Padding(
-                      padding: const EdgeInsets.only(left: 65, right: 20),
-                      child: TextField(
-                        controller: _bloc.printerIpController,
-                        decoration: const InputDecoration(
-                          hintText: 'IP Address',
-                          hintStyle:
-                              TextStyle(color: Colors.black38, fontSize: 15),
+                          context,
+                          value,
                         ),
-                        textInputAction: TextInputAction.done,
-                        onSubmitted: (value) {
-                          _bloc.savePrinterIp(value);
-                          _bloc.toastMsg(context, "Select Wi-Fi Printer");
-                        },
                       ),
-                    )
-                  : Padding(
-                      padding: const EdgeInsets.only(left: 45),
-                      child: _devices.isEmpty
-                          ? Center(
-                              child: Text(_deviceMsg ?? ""),
-                            )
-                          : ListView.builder(
-                              shrinkWrap: true,
-                              itemBuilder: ((context, index) {
-                                return ListTile(
-                                  leading: const Icon(Icons.print),
-                                  title: Text(_devices[index].name ?? ''),
-                                  subtitle: Text(_devices[index].address ?? ''),
-                                  onTap: () {
-                                    final printer = Printer(
-                                      name: _devices[index].name,
-                                      address: _devices[index].address,
-                                      type: _devices[index].type,
-                                    );
-                                    selectedPrinter(printer);
-                                    _bloc.toastMsg(
-                                      context,
-                                      "Select Bluetooth Printer",
-                                    );
-                                  },
-                                );
-                              }),
-                              itemCount: _devices.length,
-                            ),
                     ),
-            ),
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Container(
-            width: double.infinity,
-            height: 40,
-            color: Colors.blue,
-            alignment: Alignment.centerLeft,
-            padding: const EdgeInsets.only(left: 20),
-            child: const Text(
-              'Data Store',
-              style: TextStyle(color: Colors.white, fontSize: 20),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () {
-                    if (getAlldata != null) {
-                    } else {
-                      _bloc.toastMsg(context, "Don't have data avialble");
-                      _bloc.downloadFile();
-                    }
-                  },
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                  ),
-                  child: const Text(
-                    'Download File',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
+                    const Text('Network'),
+                  ],
                 ),
-                TextButton(
-                  onPressed: () {
-                    _showMyDialog(context);
-                  },
-                  style: TextButton.styleFrom(
-                    backgroundColor: Colors.red,
-                  ),
-                  child: const Text(
-                    'Clear Data',
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
+                Row(
+                  children: [
+                    AnimatedBuilder(
+                      animation: _bloc,
+                      builder: (context, child) => Radio(
+                        value: PrinterOption.bluetooth,
+                        groupValue: _bloc.printerOption,
+                        onChanged: (value) => _bloc.selectedPrinterOption(
+                          context,
+                          value,
+                        ),
+                      ),
+                    ),
+                    const Text('Bluetooth'),
+                  ],
                 ),
               ],
             ),
-          ),
-        ],
+            const SizedBox(height: 20),
+            const Text(
+              "Setup Printer Option:",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Expanded(
+              child: AnimatedBuilder(
+                animation: _bloc,
+                builder: (context, child) => _bloc.printerOption ==
+                        PrinterOption.wifi
+                    ? Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: TextField(
+                          controller: _bloc.printerIpController,
+                          decoration: const InputDecoration(
+                            hintText: 'Enter Printer IP Address',
+                            hintStyle:
+                                TextStyle(color: Colors.black38, fontSize: 15),
+                          ),
+                          textInputAction: TextInputAction.done,
+                          onSubmitted: (value) {
+                            _bloc.savePrinterIp(value);
+                            _bloc.toastMsg(context, "Select Wi-Fi Printer");
+                          },
+                        ),
+                      )
+                    : _devices.isEmpty
+                        ? Center(
+                            child: Text(_deviceMsg ?? ""),
+                          )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            itemBuilder: ((context, index) {
+                              return Column(
+                                children: [
+                                  ListTile(
+                                    leading: const Icon(Icons.print),
+                                    title: Text(_devices[index].name ?? ''),
+                                    subtitle:
+                                        Text(_devices[index].address ?? ''),
+                                    onTap: () {
+                                      final printer = Printer(
+                                        name: _devices[index].name,
+                                        address: _devices[index].address,
+                                        type: _devices[index].type,
+                                      );
+                                      selectedPrinter(printer);
+                                      _bloc.toastMsg(
+                                        context,
+                                        "Select Bluetooth Printer",
+                                      );
+                                    },
+                                  ),
+                                  const Divider(
+                                    height: 0.5,
+                                    color: Colors.grey,
+                                  )
+                                ],
+                              );
+                            }),
+                            itemCount: _devices.length,
+                          ),
+              ),
+            ),
+            const SizedBox(
+              height: 10,
+            ),
+            Container(
+              width: double.infinity,
+              height: 40,
+              color: Colors.blue,
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.only(left: 20),
+              child: const Text(
+                'Data Store',
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () => _bloc.getVisitors(context),
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                    ),
+                    child: const Text(
+                      'Download File',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      _showMyDialog(context);
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.red,
+                    ),
+                    child: const Text(
+                      'Clear Data',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -210,7 +226,7 @@ class _SettingPageState extends State<SettingPage> {
   Future<void> _showMyDialog(BuildContext context) async {
     return showDialog<void>(
       context: context,
-      barrierDismissible: false, // user must tap button!
+      barrierDismissible: false,
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Clear Data'),
@@ -242,11 +258,4 @@ class _SettingPageState extends State<SettingPage> {
       },
     );
   }
-}
-
-class TimeValue {
-  final int _key;
-  final String _value;
-
-  TimeValue(this._key, this._value);
 }

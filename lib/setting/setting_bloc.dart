@@ -48,10 +48,6 @@ class SettingBloc extends ChangeNotifier {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
-  void downloadFile() {
-    _db.queryAllRows().then((value) => exportFile(value));
-  }
-
   Future<void> exportFile(List<ModelDB> data) async {
     final Workbook workbook = Workbook();
     final Worksheet sheet = workbook.worksheets[0];
@@ -114,16 +110,14 @@ class SettingBloc extends ChangeNotifier {
 
       /// Column of Phone
       _bindDataToColumn(sheet, "H$rowIndex", data[index].phone);
-
-      final List<int> bytes = workbook.saveAsStream();
-      workbook.dispose();
-
-      final path = (await getApplicationSupportDirectory()).path;
-      final String fileName = "$path/Visitor.xlsx";
-      final File file = File(fileName);
-      await file.writeAsBytes(bytes, flush: true);
-      _shareFile(fileName);
     }
+    final List<int> bytes = workbook.saveAsStream();
+    workbook.dispose();
+    final path = (await getApplicationSupportDirectory()).path;
+    final String fileName = "$path/Visitor.xlsx";
+    final File file = File(fileName);
+    await file.writeAsBytes(bytes, flush: true);
+    _shareFile(fileName);
   }
 
   Future<void> _shareFile(String fileName) async {
@@ -138,11 +132,19 @@ class SettingBloc extends ChangeNotifier {
     nameColumn.autoFit();
   }
 
+  void getVisitors(BuildContext context) async {
+    await _db.queryAllRows().then((value) {
+      if (value.isNotEmpty) {
+        exportFile(value);
+      } else {
+        toastMsg(context, "Don't have data avialble");
+      }
+    });
+  }
+
   void clearData() {
     _db.delete();
   }
-
- 
 
   @override
   void dispose() {

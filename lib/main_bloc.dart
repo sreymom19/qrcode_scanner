@@ -32,7 +32,6 @@ class MainBloc extends ChangeNotifier {
   void onScan(String? code) {
     final List<String> result = code!.split("/");
     item = ModelDB(
-      id: 0,
       prefix: result[0],
       name: result[1],
       position: result[2],
@@ -42,7 +41,6 @@ class MainBloc extends ChangeNotifier {
       phone: result.length > 6 ? result[6] : result[5],
     );
     setTextController();
-    insertToDB();
     notifyListeners();
   }
 
@@ -53,13 +51,13 @@ class MainBloc extends ChangeNotifier {
     positionController.text = item?.position ?? "";
   }
 
-  void insertToDB() {
-    dbHelper.insertQR(item!);
+  void insertToDB() async {
+    await dbHelper.insertQR(item!);
   }
 
   void printInfo() {
+    insertToDB();
     getPrinterOption().then((value) {
-      print("option => $value");
       if (value == PrinterOption.bluetooth.name) {
         _bluetoothPrint();
       } else {
@@ -172,23 +170,27 @@ class MainBloc extends ChangeNotifier {
     // bytes += generator.text('Special 2: blåbærgrød',
     //     styles: PosStyles(codeTable: PosCodeTable.westEur));
 
-    bytes += generator.text('${data.prefix}: ${data.name}',
-        styles: const PosStyles(
-          bold: true,
-          align: PosAlign.left,
-          height: PosTextSize.size2,
-          width: PosTextSize.size2,
-        ),
-        linesAfter: 1);
+    bytes += generator.text(
+      '${data.prefix}: ${data.name}',
+      styles: const PosStyles(
+        bold: true,
+        align: PosAlign.left,
+        height: PosTextSize.size2,
+        width: PosTextSize.size2,
+      ),
+      linesAfter: 1,
+    );
     // bytes += generator.text(data.name, styles: PosStyles(bold: true));
-    bytes += generator.text(data.position,
-        styles: const PosStyles(
-          align: PosAlign.left,
-          bold: true,
-          height: PosTextSize.size2,
-          width: PosTextSize.size2,
-        ),
-        linesAfter: 1);
+    bytes += generator.text(
+      data.position,
+      styles: const PosStyles(
+        align: PosAlign.left,
+        bold: true,
+        height: PosTextSize.size2,
+        width: PosTextSize.size2,
+      ),
+      linesAfter: 1,
+    );
     bytes += generator.text(data.company,
         styles: const PosStyles(
           align: PosAlign.left,

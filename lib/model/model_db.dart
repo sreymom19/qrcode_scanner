@@ -20,17 +20,6 @@ void main() async {
         conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
-  var visitor = ModelDB(
-      id: 0,
-      prefix: '',
-      name: 'Som Sreymom',
-      position: 'IT',
-      company: 'Epenh Co.,ltd',
-      type: 'Exhibitor',
-      email: 'sreymomsom19@gmail.com',
-      phone: '010553289');
-  await insertQR(visitor);
-
   Future<List<ModelDB>> visitors() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('visitors');
@@ -52,7 +41,7 @@ void main() async {
 }
 
 class ModelDB {
-  final int id;
+  final int? id;
   final String prefix;
   final String name;
   final String position;
@@ -62,7 +51,7 @@ class ModelDB {
   final String phone;
 
   ModelDB({
-    required this.id,
+    this.id,
     required this.prefix,
     required this.name,
     required this.position,

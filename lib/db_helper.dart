@@ -56,7 +56,6 @@ class DatabaseHelper {
     await db?.insert(
       table,
       qr.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
 
