@@ -3,12 +3,13 @@ import 'package:esc_pos_printer/esc_pos_printer.dart' as network;
 import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bluetooth_basic/flutter_bluetooth_basic.dart';
 import 'package:qr_code_scanner/model/model_db.dart';
 import 'package:qr_code_scanner/preference/printer_ip_pref.dart';
 import 'package:qr_code_scanner/preference/printer_option_pref.dart';
-
+import 'package:flutter/src/services/text_formatter.dart';
 import 'db_helper.dart';
 import 'preference/printer_pref.dart';
 
@@ -20,6 +21,9 @@ class MainBloc extends ChangeNotifier {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController companyController = TextEditingController();
   final TextEditingController positionController = TextEditingController();
+  final TextEditingController typeController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
 
   ModelDB? item;
   bool? isChecked = false;
@@ -49,6 +53,9 @@ class MainBloc extends ChangeNotifier {
     nameController.text = item?.name ?? "";
     companyController.text = item?.company ?? "";
     positionController.text = item?.position ?? "";
+    typeController.text = item?.type ?? "";
+    emailController.text = item?.email ?? "";
+    phoneController.text = item?.phone ?? "";
   }
 
   void insertToDB() async {
@@ -273,6 +280,18 @@ class MainBloc extends ChangeNotifier {
     nameController.dispose();
     companyController.dispose();
     positionController.dispose();
+    typeController.dispose();
+    emailController.dispose();
+    phoneController.dispose();
     super.dispose();
+  }
+}
+
+class UppercaseTxt extends TextInputFormatter {
+  @override
+  TextEditingValue formatEditUpdate(
+      TextEditingValue oldValue, TextEditingValue newValue) {
+    return newValue.copyWith(text: newValue.text.toUpperCase());
+    
   }
 }

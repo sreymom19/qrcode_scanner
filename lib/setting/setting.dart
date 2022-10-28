@@ -3,11 +3,10 @@ import 'dart:io';
 import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:qr_code_scanner/model/model_db.dart';
 import 'package:qr_code_scanner/preference/printer_option_pref.dart';
 import 'package:qr_code_scanner/setting/setting_bloc.dart';
 import 'package:screenshot/screenshot.dart';
-
+import '../main_bloc.dart';
 import '../preference/printer.dart';
 import '../preference/printer_pref.dart';
 
@@ -24,6 +23,7 @@ class _SettingPageState extends State<SettingPage> {
   String dir = Directory.current.path;
 
   final _bloc = SettingBloc();
+  final _mainbloc = MainBloc();
   final PrinterBluetoothManager _printerManager = PrinterBluetoothManager();
   List<PrinterBluetooth> _devices = [];
   String? _deviceMsg;
@@ -114,67 +114,99 @@ class _SettingPageState extends State<SettingPage> {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            Expanded(
-              child: AnimatedBuilder(
-                animation: _bloc,
-                builder: (context, child) => _bloc.printerOption ==
-                        PrinterOption.wifi
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: TextField(
-                          controller: _bloc.printerIpController,
-                          decoration: const InputDecoration(
-                            hintText: 'Enter Printer IP Address',
-                            hintStyle:
-                                TextStyle(color: Colors.black38, fontSize: 15),
-                          ),
-                          textInputAction: TextInputAction.done,
-                          onSubmitted: (value) {
-                            _bloc.savePrinterIp(value);
-                            _bloc.toastMsg(context, "Select Wi-Fi Printer");
-                          },
+            AnimatedBuilder(
+              animation: _bloc,
+              builder: (context, child) => _bloc.printerOption ==
+                      PrinterOption.wifi
+                  ? Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: TextField(
+                        controller: _bloc.printerIpController,
+                        decoration: const InputDecoration(
+                          hintText: 'Enter Printer IP Address',
+                          hintStyle:
+                              TextStyle(color: Colors.black38, fontSize: 15),
                         ),
-                      )
-                    : _devices.isEmpty
-                        ? Center(
-                            child: Text(_deviceMsg ?? ""),
-                          )
-                        : ListView.builder(
-                            shrinkWrap: true,
-                            itemBuilder: ((context, index) {
-                              return Column(
-                                children: [
-                                  ListTile(
-                                    leading: const Icon(Icons.print),
-                                    title: Text(_devices[index].name ?? ''),
-                                    subtitle:
-                                        Text(_devices[index].address ?? ''),
-                                    onTap: () {
-                                      final printer = Printer(
-                                        name: _devices[index].name,
-                                        address: _devices[index].address,
-                                        type: _devices[index].type,
-                                      );
-                                      selectedPrinter(printer);
-                                      _bloc.toastMsg(
-                                        context,
-                                        "Select Bluetooth Printer",
-                                      );
-                                    },
-                                  ),
-                                  const Divider(
-                                    height: 0.5,
-                                    color: Colors.grey,
-                                  )
-                                ],
-                              );
-                            }),
-                            itemCount: _devices.length,
-                          ),
+                        textInputAction: TextInputAction.done,
+                        onSubmitted: (value) {
+                          _bloc.savePrinterIp(value);
+                          _bloc.toastMsg(context, "Select Wi-Fi Printer");
+                        },
+                      ),
+                    )
+                  : _devices.isEmpty
+                      ? Center(
+                          child: Text(_deviceMsg ?? ""),
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          itemBuilder: ((context, index) {
+                            return Column(
+                              children: [
+                                ListTile(
+                                  leading: const Icon(Icons.print),
+                                  title: Text(_devices[index].name ?? ''),
+                                  subtitle: Text(_devices[index].address ?? ''),
+                                  onTap: () {
+                                    final printer = Printer(
+                                      name: _devices[index].name,
+                                      address: _devices[index].address,
+                                      type: _devices[index].type,
+                                    );
+                                    selectedPrinter(printer);
+                                    _bloc.toastMsg(
+                                      context,
+                                      "Select Bluetooth Printer",
+                                    );
+                                  },
+                                ),
+                                const Divider(
+                                  height: 0.5,
+                                  color: Colors.grey,
+                                )
+                              ],
+                            );
+                          }),
+                          itemCount: _devices.length,
+                        ),
+            ),
+            const SizedBox(
+              height: 30,
+            ),
+            const Text(
+              'Select QR Code',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(
               height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(
+                  width: 32,
+                  height: 32,
+                  child: AnimatedBuilder(
+                    animation: _mainbloc,
+                    builder: (context, child) => Checkbox(
+                      value: _mainbloc.isChecked,
+                      onChanged: (bool? value) => _mainbloc.onQrCodeChecked(
+                        value,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                const Text(
+                  'QR Code',
+                  style: TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: 40,
             ),
             Container(
               width: double.infinity,
@@ -188,7 +220,7 @@ class _SettingPageState extends State<SettingPage> {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 50),
+              padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [

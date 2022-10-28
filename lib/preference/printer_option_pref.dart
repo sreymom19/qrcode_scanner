@@ -18,3 +18,4 @@ Future<String> getPrinterOption() async {
 }
 
 enum PrinterOption { bluetooth, wifi }
+

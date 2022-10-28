@@ -1,13 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:qr_code_scanner/db_helper.dart';
 import 'package:qr_code_scanner/model/model_db.dart';
 import 'package:qr_code_scanner/preference/printer_option_pref.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:sqflite/sqflite.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart';
 
 import '../preference/printer_ip_pref.dart';
@@ -16,6 +14,8 @@ class SettingBloc extends ChangeNotifier {
   final DatabaseHelper _db = DatabaseHelper.instance;
   TextEditingController printerIpController = TextEditingController();
   PrinterOption? printerOption = PrinterOption.wifi;
+
+ 
 
   void init() {
     getPrinterOption().then((value) {

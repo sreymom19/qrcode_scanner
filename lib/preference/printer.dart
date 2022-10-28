@@ -17,3 +17,5 @@ class Printer {
     return {"name": name, "address": address, "type": type};
   }
 }
+
+
