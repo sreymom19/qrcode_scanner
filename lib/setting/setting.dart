@@ -4,6 +4,7 @@ import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:qr_code_scanner/preference/printer_option_pref.dart';
+import 'package:qr_code_scanner/preference/qrcode_pref.dart';
 import 'package:qr_code_scanner/setting/setting_bloc.dart';
 import 'package:screenshot/screenshot.dart';
 import '../main_bloc.dart';
@@ -23,7 +24,6 @@ class _SettingPageState extends State<SettingPage> {
   String dir = Directory.current.path;
 
   final _bloc = SettingBloc();
-  final _mainbloc = MainBloc();
   final PrinterBluetoothManager _printerManager = PrinterBluetoothManager();
   List<PrinterBluetooth> _devices = [];
   String? _deviceMsg;
@@ -189,10 +189,11 @@ class _SettingPageState extends State<SettingPage> {
                   width: 32,
                   height: 32,
                   child: AnimatedBuilder(
-                    animation: _mainbloc,
+                    animation: _bloc,
                     builder: (context, child) => Checkbox(
-                      value: _mainbloc.isChecked,
-                      onChanged: (bool? value) => _mainbloc.onQrCodeChecked(
+                      value: _bloc.isShouldQrCodePrint,
+                      onChanged: (bool? value) =>
+                          _bloc.onShouldQrCodePrintChecked(
                         value,
                       ),
                     ),

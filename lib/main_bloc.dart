@@ -1,19 +1,28 @@
+import 'dart:convert';
+
+import 'package:charset_converter/charset_converter.dart';
 import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart';
 import 'package:esc_pos_printer/esc_pos_printer.dart' as network;
 import 'package:esc_pos_utils/esc_pos_utils.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bluetooth_basic/flutter_bluetooth_basic.dart';
 import 'package:qr_code_scanner/model/model_db.dart';
 import 'package:qr_code_scanner/preference/printer_ip_pref.dart';
 import 'package:qr_code_scanner/preference/printer_option_pref.dart';
 import 'package:flutter/src/services/text_formatter.dart';
+import 'package:qr_code_scanner/preference/qrcode_pref.dart';
 import 'db_helper.dart';
 import 'preference/printer_pref.dart';
 
+const PosStyles posStyle = PosStyles(
+  bold: true,
+  height: PosTextSize.size2,
+  width: PosTextSize.size2,
+);
+
 class MainBloc extends ChangeNotifier {
+  late BuildContext context;
   final dbHelper = DatabaseHelper.instance;
   final PrinterBluetoothManager _printerManager = PrinterBluetoothManager();
 
@@ -28,6 +37,10 @@ class MainBloc extends ChangeNotifier {
   ModelDB? item;
   bool? isChecked = false;
 
+  void init(BuildContext context) async {
+    this.context = context;
+  }
+
   void onQrCodeChecked(bool? value) {
     isChecked = value;
     notifyListeners();
@@ -35,42 +48,80 @@ class MainBloc extends ChangeNotifier {
 
   void onScan(String? code) {
     final List<String> result = code!.split("/");
-    item = ModelDB(
-      prefix: result[0],
-      name: result[1],
-      position: result[2],
-      company: result[3],
-      type: result[4],
-      email: result[5],
-      phone: result.length > 6 ? result[6] : result[5],
-    );
-    setTextController();
+    setTextController(result);
     notifyListeners();
   }
 
-  void setTextController() {
-    prefixController.text = item?.prefix ?? "";
-    nameController.text = item?.name ?? "";
-    companyController.text = item?.company ?? "";
-    positionController.text = item?.position ?? "";
-    typeController.text = item?.type ?? "";
-    emailController.text = item?.email ?? "";
-    phoneController.text = item?.phone ?? "";
+  void setTextController(List<String> result) {
+    prefixController.text = result[0];
+    nameController.text = result[1];
+    companyController.text = result[2];
+    positionController.text = result[3];
+    typeController.text = result[4];
+    emailController.text = result[5];
+    phoneController.text = result[6];
   }
 
   void insertToDB() async {
     await dbHelper.insertQR(item!);
   }
 
-  void printInfo() {
-    insertToDB();
-    getPrinterOption().then((value) {
-      if (value == PrinterOption.bluetooth.name) {
-        _bluetoothPrint();
-      } else {
-        _wifiPrint();
-      }
-    });
+  bool _validateForm() {
+    if (nameController.text.trim().isEmpty) return false;
+    if (phoneController.text.trim().isEmpty) return false;
+    return true;
+  }
+
+  void printInfo(BuildContext context) {
+    if (_validateForm()) {
+      _showLoading();
+      item = ModelDB(
+        prefix: prefixController.text.trim(),
+        name: nameController.text.trim(),
+        position: positionController.text.trim(),
+        company: companyController.text.trim(),
+        type: typeController.text.trim(),
+        email: emailController.text.trim(),
+        phone: phoneController.text.trim(),
+      );
+      insertToDB();
+      getQrCode().then(
+        (value) {
+          isChecked = value;
+          getPrinterOption().then((value) {
+            if (value == PrinterOption.bluetooth.name) {
+              _bluetoothPrint();
+            } else {
+              _wifiPrint();
+            }
+          });
+        },
+      );
+    } else {
+      _toastMsg(context, "Please enter information before print");
+    }
+  }
+
+  void _toastMsg(BuildContext context, String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  void _showLoading() {
+    final alert = AlertDialog(
+      content: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          CircularProgressIndicator(),
+          SizedBox(width: 20),
+          Text("Printing..."),
+        ],
+      ),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (context) => alert,
+    );
   }
 
   void _bluetoothPrint() {
@@ -83,69 +134,35 @@ class MainBloc extends ChangeNotifier {
 
   void _wifiPrint() async {
     getPrinterIP().then((value) async {
-      print("value => $value");
       const PaperSize paper = PaperSize.mm80;
       final profile = await CapabilityProfile.load();
       final printer = network.NetworkPrinter(paper, profile);
-
-      final network.PosPrintResult result =
-          await printer.connect(value, port: 9100);
-      if (result == network.PosPrintResult.success) {
-        testPrintIp(printer);
-      }
+      await printer
+          .connect(
+        value,
+        port: 9100,
+      )
+          .then((value) {
+        if (value == network.PosPrintResult.success) {
+          testPrintIp(printer);
+          Navigator.pop(context);
+        }
+      });
     });
   }
 
   void testPrintIp(network.NetworkPrinter printer) {
-    // printer.text(
-    //     'Regular: aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ');
-    // printer.text('Special 1: àÀ èÈ éÉ ûÛ üÜ çÇ ôÔ',
-    //     styles: const PosStyles(codeTable: 'CP1252'));
-    // printer.text('Special 2: blåbærgrød',
-    //     styles: const PosStyles(codeTable: 'CP1252'));
-
-    // printer.text('Bold text', styles: const PosStyles(bold: true));
-    // printer.text('Reverse text', styles: const PosStyles(reverse: true));
-    // printer.text('Underlined text',
-    //     styles: const PosStyles(underline: true), linesAfter: 1);
-    // printer.text('Align left', styles: const PosStyles(align: PosAlign.left));
-    // printer.text('Align center',
-    //     styles: const PosStyles(align: PosAlign.center));
-    // printer.text('Align right',
-    //     styles: const PosStyles(align: PosAlign.right), linesAfter: 1);
-
-    // printer.text('Text size 200%',
-    //     styles: const PosStyles(
-    //       height: PosTextSize.size2,
-    //       width: PosTextSize.size2,
-    //     ));
-    printer.text(
-      '${item?.prefix}',
-      styles: const PosStyles(
-          bold: true, height: PosTextSize.size2, width: PosTextSize.size2),
-    );
-    printer.text(
-      '${item?.name}',
-      styles: const PosStyles(
-          bold: true, height: PosTextSize.size2, width: PosTextSize.size2),
-    );
-    printer.text(
-      '${item?.position}',
-      styles: const PosStyles(
-          bold: true, height: PosTextSize.size2, width: PosTextSize.size2),
-    );
-    printer.text(
-      '${item?.company}',
-      styles: const PosStyles(
-          bold: true, height: PosTextSize.size2, width: PosTextSize.size2),
-    );
+    printer.text('${item?.prefix}', styles: posStyle);
+    printer.text('${item?.name}', styles: posStyle);
+    printer.text('${item?.position}', styles: posStyle);
+    printer.text('${item?.company}', styles: posStyle);
     if (isChecked == true) {
       printer.qrcode(
-          '${item?.prefix}/${item?.name}/${item?.position}/${item?.company}/${item?.type}/${item?.email}/${item?.phone}',
-          size: QRSize.Size6);
+        '${item?.prefix}/${item?.name}/${item?.position}/${item?.company}/${item?.type}/${item?.email}/${item?.phone}',
+        size: QRSize.Size6,
+      );
     }
-
-    printer.feed(2);
+    printer.feed(1);
     printer.cut();
   }
 
@@ -153,13 +170,19 @@ class MainBloc extends ChangeNotifier {
     _printerManager.selectPrinter(printer);
     const PaperSize paper = PaperSize.mm80;
     final profile = await CapabilityProfile.load();
-    final res = await _printerManager.printTicket(
-      (await _printTicket(paper, profile, data)),
-    );
-
-    // ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-    //   content: Text(res.msg),
-    // ));
+    await _printerManager
+        .printTicket(
+      (await _printTicket(
+        paper,
+        profile,
+        data,
+      )),
+    )
+        .then((value) {
+      if (value == PosPrintResult.success) {
+        Navigator.pop(context);
+      }
+    });
   }
 
   Future<List<int>> _printTicket(
@@ -170,42 +193,13 @@ class MainBloc extends ChangeNotifier {
     final Generator generator = Generator(paper, profile);
     List<int> bytes = [];
 
-    //bytes += generator.text(
-    //    'Regular: aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ');
-    // bytes += generator.text('Special 1: àÀ èÈ éÉ ûÛ üÜ çÇ ôÔ',
-    //     styles: PosStyles(codeTable: PosCodeTable.westEur));
-    // bytes += generator.text('Special 2: blåbærgrød',
-    //     styles: PosStyles(codeTable: PosCodeTable.westEur));
-
     bytes += generator.text(
       '${data.prefix}: ${data.name}',
-      styles: const PosStyles(
-        bold: true,
-        align: PosAlign.left,
-        height: PosTextSize.size2,
-        width: PosTextSize.size2,
-      ),
+      styles: posStyle,
       linesAfter: 1,
     );
-    // bytes += generator.text(data.name, styles: PosStyles(bold: true));
-    bytes += generator.text(
-      data.position,
-      styles: const PosStyles(
-        align: PosAlign.left,
-        bold: true,
-        height: PosTextSize.size2,
-        width: PosTextSize.size2,
-      ),
-      linesAfter: 1,
-    );
-    bytes += generator.text(data.company,
-        styles: const PosStyles(
-          align: PosAlign.left,
-          bold: true,
-          height: PosTextSize.size2,
-          width: PosTextSize.size2,
-        ),
-        linesAfter: 1);
+    bytes += generator.text(data.position, styles: posStyle, linesAfter: 1);
+    bytes += generator.text(data.company, styles: posStyle, linesAfter: 1);
 
     if (isChecked == true) {
       bytes += generator.qrcode(
@@ -214,62 +208,7 @@ class MainBloc extends ChangeNotifier {
       );
     }
 
-    // bytes += generator.text('Reverse text', styles: PosStyles(reverse: true));
-    // bytes += generator.text('Underlined text',
-    //     styles: PosStyles(underline: true), linesAfter: 1);
-    // bytes +=
-    //     generator.text('Align left', styles: PosStyles(align: PosAlign.left));
-    // bytes += generator.text('Align center',
-    //     styles: PosStyles(align: PosAlign.center));
-    // bytes += generator.text('Align right',
-    //     styles: PosStyles(align: PosAlign.right), linesAfter: 1);
-    //
-    // bytes += generator.row([
-    //   PosColumn(
-    //     text: 'col3',
-    //     width: 3,
-    //     styles: PosStyles(align: PosAlign.center, underline: true),
-    //   ),
-    //   PosColumn(
-    //     text: 'col6',
-    //     width: 6,
-    //     styles: PosStyles(align: PosAlign.center, underline: true),
-    //   ),
-    //   PosColumn(
-    //     text: 'col3',
-    //     width: 3,
-    //     styles: PosStyles(align: PosAlign.center, underline: true),
-    //   ),
-    //]);
-
-    // bytes += generator.text('Text size 200%',
-    //     styles: PosStyles(
-    //       height: PosTextSize.size2,
-    //       width: PosTextSize.size2,
-    //     ));
-
-    // Print image
-    // final ByteData data = await rootBundle.load('assets/logo.png');
-    // final Uint8List buf = data.buffer.asUint8List();
-    //final Image image = decodeImage(buf)!;
-    // bytes += generator.image(image);
-    // Print image using alternative commands
-    // bytes += generator.imageRaster(image);
-    // bytes += generator.imageRaster(image, imageFn: PosImageFn.graphics);
-
-    // Print barcode
-    // final List<int> barData = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 4];
-    // bytes += generator.barcode(Barcode.upcA(barData));
-
-    // Print mixed (chinese + latin) text. Only for printers supporting Kanji mode
-    // bytes += generator.text(
-    //   'hello ! 中文字 # world @ éphémère &',
-    //   styles: PosStyles(codeTable: PosCodeTable.westEur),
-    //   containsChinese: true,
-    // );
-
-    bytes += generator.feed(2);
-
+    bytes += generator.feed(1);
     bytes += generator.cut();
     return bytes;
   }
@@ -292,6 +231,5 @@ class UppercaseTxt extends TextInputFormatter {
   TextEditingValue formatEditUpdate(
       TextEditingValue oldValue, TextEditingValue newValue) {
     return newValue.copyWith(text: newValue.text.toUpperCase());
-    
   }
 }

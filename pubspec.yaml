@@ -50,6 +50,7 @@ dependencies:
   syncfusion_flutter_xlsio: ^20.3.50-beta
   share_plus: ^6.0.1
   path_provider: ^2.0.11
+  charset_converter: ^2.1.0
 
 dev_dependencies:
   flutter_test:

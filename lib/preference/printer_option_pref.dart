@@ -13,7 +13,7 @@ Future<void> setPrinterOption(PrinterOption? option) async {
 Future<String> getPrinterOption() async {
   SharedPreferences pref = await SharedPreferences.getInstance();
   final option = pref.getString(prefPrinterOption);
-  if (option == null) return PrinterOption.bluetooth.name;
+  if (option == null) return PrinterOption.wifi.name;
   return option;
 }
 

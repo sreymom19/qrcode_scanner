@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:qr_code_scanner/main_bloc.dart';
-import 'package:qr_code_scanner/model/model_db.dart';
 import 'package:qr_code_scanner/setting/setting.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
@@ -20,15 +19,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -38,8 +35,11 @@ class _MyHomePageState extends State<MyHomePage> {
   final MainBloc _bloc = MainBloc();
   MobileScannerController cameraController = MobileScannerController();
 
-  ModelDB? item;
-  final List<ModelDB> items = [];
+  @override
+  void initState() {
+    _bloc.init(context);
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -146,7 +146,6 @@ class _MyHomePageState extends State<MyHomePage> {
                       children: [
                         Container(
                           child: TextFormField(
-                           
                             style: const TextStyle(
                                 color: Colors.blue, fontSize: 20),
                             controller: _bloc.prefixController,
@@ -288,9 +287,7 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 50,
               child: TextButton.icon(
                 onPressed: () {
-                  if (_bloc.item != null) {
-                    _bloc.printInfo();
-                  }
+                  _bloc.printInfo(context);
                 },
                 style: TextButton.styleFrom(
                   backgroundColor: Colors.blue,
