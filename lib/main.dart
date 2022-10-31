@@ -1,4 +1,3 @@
-import 'package:dropdownfield/dropdownfield.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:qr_code_scanner/main_bloc.dart';
@@ -159,35 +158,36 @@ class _MyHomePageState extends State<MyHomePage> {
                         //     },
                         //   ),
                         // ),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(0.0),
-                          child: DropdownButton<String>(
-                            value: _bloc.valuePre,
-
-                            //elevation: 5,
-                            style: const TextStyle(
-                                color: Colors.blue, fontSize: 20),
-                            items: _bloc.prefixes
-                                .map<DropdownMenuItem<String>>((prefix) {
-                              return DropdownMenuItem<String>(
-                                value: prefix,
-                                child: Text(prefix),
-                              );
-                            }).toList(),
-                            hint: const Text(
-                              "Mr/Ms/Mrs",
-                              style: TextStyle(
-                                  color: Colors.black38, fontSize: 15),
+                        AnimatedBuilder(
+                          animation: _bloc,
+                          builder: (context, child) => Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(0.0),
+                            child: DropdownButton<String>(
+                              value: _bloc.valuePre,
+                              style: const TextStyle(
+                                  color: Colors.blue, fontSize: 20),
+                              items: _bloc.prefixes
+                                  .map<DropdownMenuItem<String>>((prefix) {
+                                return DropdownMenuItem<String>(
+                                  value: prefix,
+                                  child: Text(prefix),
+                                );
+                              }).toList(),
+                              hint: const Text(
+                                "Mr/Ms/Mrs",
+                                style: TextStyle(
+                                    color: Colors.black38, fontSize: 15),
+                              ),
+                              onChanged: (String? value) {
+                                setState(() {
+                                  _bloc.valuePre = value;
+                                });
+                              },
                             ),
-                            onChanged: (String? value) {
-                              setState(() {
-                                _bloc.valuePre = value;
-                              });
-                            },
                           ),
                         ),
-                        
+
                         const SizedBox(height: 10),
                         Container(
                           child: TextFormField(

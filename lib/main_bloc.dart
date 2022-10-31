@@ -60,7 +60,7 @@ class MainBloc extends ChangeNotifier {
     positionController.text = result[3];
     typeController.text = result[4];
     emailController.text = result[5];
-    phoneController.text = result[6];
+    phoneController.text = result.length > 6 ? result[6]: result[5];
   }
 
   void insertToDB() async {
