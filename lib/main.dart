@@ -1,3 +1,4 @@
+import 'package:dropdownfield/dropdownfield.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:qr_code_scanner/main_bloc.dart';
@@ -144,18 +145,49 @@ class _MyHomePageState extends State<MyHomePage> {
                         const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
                     child: Column(
                       children: [
+                        // Container(
+                        //   child: DropDownField(
+                        //     controller: _bloc.prefixController,
+                        //     hintText: 'Mr/Ms/Mrs',
+                        //     hintStyle: const TextStyle(
+                        //         color: Colors.black38, fontSize: 15),
+                        //     items: _bloc.items,
+                        //     onValueChanged: (value) {
+                        //       setState(() {
+                        //         _bloc.setItems = value;
+                        //       });
+                        //     },
+                        //   ),
+                        // ),
                         Container(
-                          child: TextFormField(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(0.0),
+                          child: DropdownButton<String>(
+                            value: _bloc.valuePre,
+
+                            //elevation: 5,
                             style: const TextStyle(
                                 color: Colors.blue, fontSize: 20),
-                            controller: _bloc.prefixController,
-                            decoration: const InputDecoration(
-                              hintText: 'Mr/Ms/Mrs',
-                              hintStyle: TextStyle(
+                            items: _bloc.prefixes
+                                .map<DropdownMenuItem<String>>((prefix) {
+                              return DropdownMenuItem<String>(
+                                value: prefix,
+                                child: Text(prefix),
+                              );
+                            }).toList(),
+                            hint: const Text(
+                              "Mr/Ms/Mrs",
+                              style: TextStyle(
                                   color: Colors.black38, fontSize: 15),
                             ),
+                            onChanged: (String? value) {
+                              setState(() {
+                                _bloc.valuePre = value;
+                              });
+                            },
                           ),
                         ),
+                        
                         const SizedBox(height: 10),
                         Container(
                           child: TextFormField(

@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:charset_converter/charset_converter.dart';
 import 'package:esc_pos_bluetooth/esc_pos_bluetooth.dart';
 import 'package:esc_pos_printer/esc_pos_printer.dart' as network;
 import 'package:esc_pos_utils/esc_pos_utils.dart';
@@ -17,6 +14,7 @@ import 'preference/printer_pref.dart';
 
 const PosStyles posStyle = PosStyles(
   bold: true,
+  align: PosAlign.center,
   height: PosTextSize.size2,
   width: PosTextSize.size2,
 );
@@ -37,6 +35,9 @@ class MainBloc extends ChangeNotifier {
   ModelDB? item;
   bool? isChecked = false;
 
+  List<String> prefixes = ["Mr", "Ms", "Mrs"];
+  String? valuePre;
+
   void init(BuildContext context) async {
     this.context = context;
   }
@@ -53,7 +54,7 @@ class MainBloc extends ChangeNotifier {
   }
 
   void setTextController(List<String> result) {
-    prefixController.text = result[0];
+    valuePre = result[0];
     nameController.text = result[1];
     companyController.text = result[2];
     positionController.text = result[3];
@@ -76,7 +77,7 @@ class MainBloc extends ChangeNotifier {
     if (_validateForm()) {
       _showLoading();
       item = ModelDB(
-        prefix: prefixController.text.trim(),
+        prefix: valuePre ?? "",
         name: nameController.text.trim(),
         position: positionController.text.trim(),
         company: companyController.text.trim(),
@@ -152,9 +153,10 @@ class MainBloc extends ChangeNotifier {
   }
 
   void testPrintIp(network.NetworkPrinter printer) {
-    printer.text('${item?.prefix}', styles: posStyle);
-    printer.text('${item?.name}', styles: posStyle);
-    printer.text('${item?.position}', styles: posStyle);
+    printer.text('${item?.prefix}: ${item?.name}',
+        styles: posStyle, linesAfter: 1);
+    //printer.text('${item?.name}', styles: posStyle,linesAfter: 1);
+    printer.text('${item?.position}', styles: posStyle, linesAfter: 1);
     printer.text('${item?.company}', styles: posStyle);
     if (isChecked == true) {
       printer.qrcode(
@@ -199,7 +201,11 @@ class MainBloc extends ChangeNotifier {
       linesAfter: 1,
     );
     bytes += generator.text(data.position, styles: posStyle, linesAfter: 1);
-    bytes += generator.text(data.company, styles: posStyle, linesAfter: 1);
+    bytes += generator.text(
+      data.company,
+      styles: posStyle,
+      linesAfter: 1,
+    );
 
     if (isChecked == true) {
       bytes += generator.qrcode(

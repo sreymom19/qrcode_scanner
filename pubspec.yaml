@@ -42,6 +42,8 @@ dependencies:
   shared_preferences: ^2.0.15
   flutter_bluetooth_basic: ^0.1.7
   qr_flutter: ^4.0.0
+  dropdown_formfield: ^0.1.4
+  dropdownfield: ^1.0.3
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
