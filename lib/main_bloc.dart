@@ -15,8 +15,8 @@ import 'preference/printer_pref.dart';
 const PosStyles posStyle = PosStyles(
   bold: true,
   align: PosAlign.center,
-  height: PosTextSize.size2,
-  width: PosTextSize.size2,
+  height: PosTextSize.size3,
+  width: PosTextSize.size3,
 );
 
 class MainBloc extends ChangeNotifier {
@@ -60,7 +60,7 @@ class MainBloc extends ChangeNotifier {
     positionController.text = result[3];
     typeController.text = result[4];
     emailController.text = result[5];
-    phoneController.text = result.length > 6 ? result[6]: result[5];
+    phoneController.text = result.length > 6 ? result[6] : result[5];
   }
 
   void insertToDB() async {
@@ -153,10 +153,9 @@ class MainBloc extends ChangeNotifier {
   }
 
   void testPrintIp(network.NetworkPrinter printer) {
-    printer.text('${item?.prefix}: ${item?.name}',
-        styles: posStyle, linesAfter: 1);
+    printer.text('${item?.name}', styles: posStyle);
     //printer.text('${item?.name}', styles: posStyle,linesAfter: 1);
-    printer.text('${item?.position}', styles: posStyle, linesAfter: 1);
+    printer.text('${item?.position}', styles: posStyle);
     printer.text('${item?.company}', styles: posStyle);
     if (isChecked == true) {
       printer.qrcode(
@@ -164,6 +163,13 @@ class MainBloc extends ChangeNotifier {
         size: QRSize.Size6,
       );
     }
+    printer.text(
+      '${item?.type}',
+      styles: const PosStyles(
+          height: PosTextSize.size3,
+          width: PosTextSize.size3,
+          align: PosAlign.center),
+    );
     printer.feed(1);
     printer.cut();
   }
@@ -195,25 +201,22 @@ class MainBloc extends ChangeNotifier {
     final Generator generator = Generator(paper, profile);
     List<int> bytes = [];
 
-    bytes += generator.text(
-      '${data.prefix}: ${data.name}',
-      styles: posStyle,
-      linesAfter: 1,
-    );
-    bytes += generator.text(data.position, styles: posStyle, linesAfter: 1);
-    bytes += generator.text(
-      data.company,
-      styles: posStyle,
-      linesAfter: 1,
-    );
-
+    bytes += generator.text(' ${data.name}', styles: posStyle);
+    bytes += generator.text(data.position, styles: posStyle);
+    bytes += generator.text(data.company, styles: posStyle);
     if (isChecked == true) {
       bytes += generator.qrcode(
         '${data.prefix}/${data.name}/${data.position}/${data.company}/${data.type}/${data.email}/${data.phone}',
-        size: QRSize.Size6,
+        size: QRSize.Size4,
       );
     }
-
+    bytes += generator.text(
+      data.type,
+      styles: const PosStyles(
+          height: PosTextSize.size3,
+          width: PosTextSize.size3,
+          align: PosAlign.center),
+    );
     bytes += generator.feed(1);
     bytes += generator.cut();
     return bytes;
