@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:qr_code_scanner/main_bloc.dart';
+import 'package:qr_code_scanner/main_form.dart';
 import 'package:qr_code_scanner/setting/setting.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 
 void main() async {
   runApp(const MyApp());
@@ -111,228 +111,77 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Column(
         children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 10),
-                    child: Center(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(40),
-                        child: SizedBox(
-                          width: 270,
-                          height: 270,
-                          child: MobileScanner(
-                            allowDuplicates: true,
-                            controller: cameraController,
-                            onDetect: (barcode, args) {
-                              if (barcode.rawValue == null) {
-                                debugPrint('Failed to scan Barcode');
-                              } else {
-                                // cameraController.stop();
-                                _bloc.onScan(barcode.rawValue);
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 30, vertical: 5),
-                    child: Column(
-                      children: [
-                        // Container(
-                        //   child: DropDownField(
-                        //     controller: _bloc.prefixController,
-                        //     hintText: 'Mr/Ms/Mrs',
-                        //     hintStyle: const TextStyle(
-                        //         color: Colors.black38, fontSize: 15),
-                        //     items: _bloc.items,
-                        //     onValueChanged: (value) {
-                        //       setState(() {
-                        //         _bloc.setItems = value;
-                        //       });
-                        //     },
-                        //   ),
-                        // ),
-                        AnimatedBuilder(
-                          animation: _bloc,
-                          builder: (context, child) => Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(0.0),
-                            child: DropdownButton<String>(
-                              value: _bloc.valuePre,
-                              style: const TextStyle(
-                                  color: Colors.blue, fontSize: 20),
-                              items: _bloc.prefixes
-                                  .map<DropdownMenuItem<String>>((prefix) {
-                                return DropdownMenuItem<String>(
-                                  value: prefix,
-                                  child: Text(prefix),
-                                );
-                              }).toList(),
-                              hint: const Text(
-                                "Mr/Ms/Mrs",
-                                style: TextStyle(
-                                    color: Colors.black38, fontSize: 15),
-                              ),
-                              onChanged: (String? value) {
-                                setState(() {
-                                  _bloc.valuePre = value;
-                                });
-                              },
-                            ),
-                          ),
-                        ),
-
-                        const SizedBox(height: 10),
-                        Container(
-                          child: TextFormField(
-                            inputFormatters: [UppercaseTxt()],
-                            style: const TextStyle(
-                                color: Colors.blue, fontSize: 20),
-                            controller: _bloc.nameController,
-                            decoration: const InputDecoration(
-                              hintText: 'Name',
-                              hintStyle: TextStyle(
-                                  color: Colors.black38, fontSize: 15),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                          child: TextFormField(
-                            inputFormatters: [UppercaseTxt()],
-                            style: const TextStyle(
-                                color: Colors.blue, fontSize: 20),
-                            controller: _bloc.positionController,
-                            decoration: const InputDecoration(
-                              hintText: 'Position',
-                              hintStyle: TextStyle(
-                                  color: Colors.black38, fontSize: 15),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                          child: TextFormField(
-                            inputFormatters: [UppercaseTxt()],
-                            style: const TextStyle(
-                                color: Colors.blue, fontSize: 20),
-                            controller: _bloc.companyController,
-                            decoration: const InputDecoration(
-                              hintText: 'Company',
-                              hintStyle: TextStyle(
-                                  color: Colors.black38, fontSize: 15),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                          child: TextFormField(
-                            inputFormatters: [UppercaseTxt()],
-                            style: const TextStyle(
-                                color: Colors.blue, fontSize: 20),
-                            controller: _bloc.typeController,
-                            decoration: const InputDecoration(
-                              hintText: 'Type',
-                              hintStyle: TextStyle(
-                                  color: Colors.black38, fontSize: 15),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                          child: TextFormField(
-                            style: const TextStyle(
-                                color: Colors.blue, fontSize: 20),
-                            controller: _bloc.emailController,
-                            decoration: const InputDecoration(
-                              hintText: 'Email',
-                              hintStyle: TextStyle(
-                                  color: Colors.black38, fontSize: 15),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        Container(
-                          child: TextFormField(
-                            style: const TextStyle(
-                                color: Colors.blue, fontSize: 20),
-                            controller: _bloc.phoneController,
-                            decoration: const InputDecoration(
-                              hintText: 'Mobile',
-                              hintStyle: TextStyle(
-                                  color: Colors.black38, fontSize: 15),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        // Row(
-                        //   mainAxisAlignment: MainAxisAlignment.start,
-                        //   children: [
-                        //     SizedBox(
-                        //       width: 28,
-                        //       height: 28,
-                        //       child: AnimatedBuilder(
-                        //         animation: _bloc,
-                        //         builder: (context, child) => Checkbox(
-                        //           value: _bloc.isChecked,
-                        //           onChanged: (bool? value) => _bloc.onQrCodeChecked(
-                        //             value,
-                        //           ),
-                        //         ),
-                        //       ),
-                        //     ),
-                        //     const SizedBox(width: 8),
-                        //     const Text(
-                        //       'QR Code',
-                        //       style: TextStyle(color: Colors.black54, fontSize: 18),
-                        //     ),
-                        //   ],
-                        // ),
-                        const SizedBox(height: 5),
-                        AnimatedBuilder(
-                          animation: _bloc,
-                          builder: ((context, child) => _bloc.isChecked == true
-                              ? QrImage(
-                                  data:
-                                      "${_bloc.item?.prefix}/${_bloc.item?.name}/${_bloc.item?.position}/${_bloc.item?.company}/${_bloc.item?.type}/${_bloc.item?.email}/${_bloc.item?.phone}",
-                                  size: 150,
-                                )
-                              : Container()),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+          const Padding(padding: EdgeInsets.only(top: 40)),
+          Center(
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(40),
+              child: SizedBox(
+                width: 300,
+                height: 300,
+                child: MobileScanner(
+                  allowDuplicates: true,
+                  controller: cameraController,
+                  onDetect: (barcode, args) {
+                    if (barcode.rawValue == null) {
+                      debugPrint('Failed to scan Barcode');
+                    } else {
+                      // cameraController.stop();
+                      _bloc.onScan(barcode.rawValue);
+                    }
+                  },
+                ),
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 30, right: 30, bottom: 20),
-            child: SizedBox(
-              width: double.infinity,
-              height: 50,
-              child: TextButton.icon(
-                onPressed: () {
-                  _bloc.printInfo(context);
-                },
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.blue,
+            padding: const EdgeInsets.only(top: 100),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                SizedBox(
+                  width: 200,
+                  height: 80,
+                  child: TextButton.icon(
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const MainForm()));
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.redAccent,
+                    ),
+                    icon: const Icon(
+                      Icons.add_box_sharp,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      'Add',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ),
                 ),
-                icon: const Icon(
-                  Icons.print,
-                  color: Colors.white,
+                SizedBox(
+                  width: 200,
+                  height: 80,
+                  child: TextButton.icon(
+                    onPressed: () {
+                      _bloc.printInfo(context);
+                    },
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                    ),
+                    icon: const Icon(
+                      Icons.qr_code,
+                      color: Colors.white,
+                    ),
+                    label: const Text(
+                      'Scan',
+                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    ),
+                  ),
                 ),
-                label: const Text(
-                  'Print',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-              ),
+              ],
             ),
           ),
         ],
