@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:qr_code_scanner/imagestorbyte.dart';
-import 'package:qr_code_scanner/receipt.dart';
+import 'package:visitor_qr_code_scanner/imagestorbyte.dart';
+import 'package:visitor_qr_code_scanner/receipt.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:esc_pos_printer/esc_pos_printer.dart';
 import 'package:esc_pos_utils/esc_pos_utils.dart';

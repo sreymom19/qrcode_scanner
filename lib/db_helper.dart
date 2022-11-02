@@ -1,5 +1,5 @@
 import 'package:path/path.dart';
-import 'package:qr_code_scanner/model/model_db.dart';
+import 'package:visitor_qr_code_scanner/model/model_db.dart';
 import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:qr_code_scanner/db_helper.dart';
-import 'package:qr_code_scanner/model/model_db.dart';
-import 'package:qr_code_scanner/printer_page.dart';
+import 'package:visitor_qr_code_scanner/db_helper.dart';
+import 'package:visitor_qr_code_scanner/model/model_db.dart';
+import 'package:visitor_qr_code_scanner/printer_page.dart';
 import 'package:intl/intl.dart';
-import 'package:qr_code_scanner/printer_setup.dart';
+import 'package:visitor_qr_code_scanner/printer_setup.dart';
 
 class VisitorPage extends StatefulWidget {
   const VisitorPage({Key? key}) : super(key: key);

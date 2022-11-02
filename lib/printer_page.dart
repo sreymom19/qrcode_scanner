@@ -3,8 +3,8 @@ import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'package:flutter/material.dart' hide Image;
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:qr_code_scanner/preference/printer.dart';
-import 'package:qr_code_scanner/preference/printer_pref.dart';
+import 'package:visitor_qr_code_scanner/preference/printer.dart';
+import 'package:visitor_qr_code_scanner/preference/printer_pref.dart';
 
 class PrinterPage extends StatefulWidget {
   const PrinterPage({super.key});

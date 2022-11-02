@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:qr_code_scanner/preference/printer.dart';
+import 'package:visitor_qr_code_scanner/preference/printer.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const String prefPrinter = "PrinterPref";
