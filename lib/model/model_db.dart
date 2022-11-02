@@ -9,7 +9,7 @@ void main() async {
     join(await getDatabasesPath(), 'qr_database.db'),
     onCreate: ((db, version) {
       return db.execute(
-          'CREATE TABLE visitors(id INTEGER PRIMARY KEY, prefix TEXT, name TEXT, position TEXT, company TEXT, type TEXT, email TEXT, phone TEXT )');
+          'CREATE TABLE visitors(id INTEGER PRIMARY KEY, name TEXT, position TEXT, company TEXT, type TEXT, email TEXT, phone TEXT )');
     }),
     version: 1,
   );
@@ -26,7 +26,7 @@ void main() async {
     return List.generate(maps.length, (i) {
       return ModelDB(
         id: maps[i]['id'],
-        prefix: maps[i]['prefix'],
+        //prefix: maps[i]['prefix'],
         name: maps[i]['name'],
         position: maps[i]['position'],
         company: maps[i]['company'],
@@ -42,7 +42,7 @@ void main() async {
 
 class ModelDB {
   final int? id;
-  final String prefix;
+  //final String prefix;
   final String name;
   final String position;
   final String company;
@@ -52,7 +52,7 @@ class ModelDB {
 
   ModelDB({
     this.id,
-    required this.prefix,
+    //required this.prefix,
     required this.name,
     required this.position,
     required this.company,
@@ -64,7 +64,7 @@ class ModelDB {
   factory ModelDB.fromMap(Map<String, dynamic> map) {
     return ModelDB(
       id: map['id'],
-      prefix: map['prefix'],
+     // prefix: map['prefix'],
       name: map['name'],
       position: map['position'],
       company: map['company'],
@@ -77,7 +77,7 @@ class ModelDB {
   Map<String, dynamic> toMap() {
     return {
       'id': id,
-      'prefix': prefix,
+      //'prefix': prefix,
       'name': name,
       'position': position,
       'company': company,
@@ -89,6 +89,6 @@ class ModelDB {
 
   @override
   String toString() {
-    return 'ModelDB{id: $id, prefix: $prefix, name : $name, position: $position,company $company, type : $type, email: $email, phone: $phone}';
+    return 'ModelDB{id: $id, name : $name, position: $position,company $company, type : $type, email: $email, phone: $phone}';
   }
 }

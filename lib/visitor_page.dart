@@ -71,15 +71,15 @@ class _VisitorPageState extends State<VisitorPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Column(
-                    children: items
-                        .map((visitor) => Text(
-                              visitor.prefix,
-                              style: const TextStyle(fontSize: 20),
-                            ))
-                        .toList(),
-                  ),
-                  const SizedBox(height: 10),
+                  // Column(
+                  //   children: items
+                  //       .map((visitor) => Text(
+                  //             visitor.prefix,
+                  //             style: const TextStyle(fontSize: 20),
+                  //           ))
+                  //       .toList(),
+                  // ),
+                  // const SizedBox(height: 10),
                   Column(
                     children: items
                         .map((visitor) => Text(

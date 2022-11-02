@@ -8,7 +8,7 @@ class DatabaseHelper {
 
   static const table = 'tbl_visitor';
   static const columnId = 'id';
-  static const columnPrefix = 'prefix';
+ // static const columnPrefix = 'prefix';
   static const columnName = 'name';
   static const columnPosition = 'position';
   static const columnCompany = 'company';
@@ -40,7 +40,6 @@ class DatabaseHelper {
     await db.execute('''
           CREATE TABLE $table (
             $columnId INTEGER PRIMARY KEY AUTOINCREMENT,
-            $columnPrefix TEXT NOT NULL,
             $columnName TEXT NOT NULL,
             $columnPosition TEXT NOT NULL,
             $columnCompany TEXT NOT NULL,

@@ -17,8 +17,9 @@ import 'preference/printer_pref.dart';
 const PosStyles posStyle = PosStyles(
   bold: true,
   align: PosAlign.center,
-  height: PosTextSize.size2,
-  width: PosTextSize.size2,
+  height: PosTextSize.size3,
+  width: PosTextSize.size3,
+  fontType: PosFontType.fontA,
 );
 
 class MainBloc extends ChangeNotifier {
@@ -37,8 +38,8 @@ class MainBloc extends ChangeNotifier {
   ModelDB? item;
   bool? isChecked = false;
 
-  List<String> prefixes = ["Mr", "Ms", "Mrs"];
-  String? valuePre;
+  //List<String> prefixes = ["Mr", "Ms", "Mrs"];
+  //String? valuePre;
 
   void init(BuildContext context) async {
     this.context = context;
@@ -50,7 +51,7 @@ class MainBloc extends ChangeNotifier {
   }
 
   void setTextController(String? code) {
-    final List<String>? result = code?.split("/");
+    final List<String>? result = code?.split(";");
     nameController.text = result?.elementAt(0) ?? "";
     companyController.text = result?.elementAt(1) ?? "";
     positionController.text = result?.elementAt(2) ?? "";
@@ -73,7 +74,6 @@ class MainBloc extends ChangeNotifier {
     if (_validateForm()) {
       _showLoading();
       item = ModelDB(
-        prefix: valuePre ?? "",
         name: nameController.text.trim(),
         position: positionController.text.trim(),
         company: companyController.text.trim(),
@@ -84,6 +84,7 @@ class MainBloc extends ChangeNotifier {
       insertToDB();
       getQrCode().then(
         (value) {
+          print("isQrPrinte => $value");
           isChecked = value;
           getPrinterOption().then((value) {
             if (value == PrinterOption.bluetooth.name) {
@@ -94,12 +95,23 @@ class MainBloc extends ChangeNotifier {
           });
         },
       );
+      clear();
+      toastMsg(context, "Print Successfully");
     } else {
-      _toastMsg(context, "Please enter information before print");
+      toastMsg(context, "Please enter information before print");
     }
   }
 
-  void _toastMsg(BuildContext context, String msg) {
+  void clear() {
+    nameController.clear();
+    positionController.clear();
+    companyController.clear();
+    typeController.clear();
+    emailController.clear();
+    phoneController.clear();
+  }
+
+  void toastMsg(BuildContext context, String msg) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
   }
 
@@ -145,15 +157,16 @@ class MainBloc extends ChangeNotifier {
 
   void testPrintIp(network.NetworkPrinter printer) {
     try {
-      printer.text('${item?.name}', styles: posStyle, linesAfter: 1);
-      printer.text('${item?.position}', styles: posStyle, linesAfter: 1);
-      printer.text('${item?.company}', styles: posStyle);
+      printer.text(_limitChar(item?.name), styles: posStyle);
+      printer.text(_limitChar(item?.position), styles: posStyle);
+      printer.text(_limitChar(item?.company), styles: posStyle);
       if (isChecked == true) {
         printer.qrcode(
-          '${item?.prefix}/${item?.name}/${item?.position}/${item?.company}/${item?.type}/${item?.email}/${item?.phone}',
-          size: QRSize.Size6,
+          '${item?.name}/${item?.position}/${item?.company}/${item?.type}/${item?.email}/${item?.phone}',
+          size: QRSize.Size5,
         );
       }
+      printer.text('TRADE VISITOR', styles: posStyle);
       printer.feed(1);
       printer.cut();
       printer.disconnect();
@@ -189,28 +202,28 @@ class MainBloc extends ChangeNotifier {
     final Generator generator = Generator(paper, profile);
     List<int> bytes = [];
 
-    bytes += generator.text(
-      '${data.prefix}: ${data.name}',
-      styles: posStyle,
-      linesAfter: 1,
-    );
-    bytes += generator.text(data.position, styles: posStyle, linesAfter: 1);
-    bytes += generator.text(
-      data.company,
-      styles: posStyle,
-      linesAfter: 1,
-    );
-
+    bytes += generator.text(_limitChar(data.name), styles: posStyle);
+    bytes += generator.text(_limitChar(data.position), styles: posStyle);
+    bytes += generator.text(_limitChar(data.company), styles: posStyle);
     if (isChecked == true) {
       bytes += generator.qrcode(
-        '${data.prefix}/${data.name}/${data.position}/${data.company}/${data.type}/${data.email}/${data.phone}',
-        size: QRSize.Size6,
+        '${data.name}/${data.position}/${data.company}/${data.type}/${data.email}/${data.phone}',
+        size: QRSize.Size5,
       );
     }
-
+    bytes += generator.text(
+      "TRADE VISITOR",
+      styles: posStyle,
+    );
     bytes += generator.feed(1);
     bytes += generator.cut();
     return bytes;
+  }
+
+  String _limitChar(String? value) {
+    final result = value!.length > 15 ? value.substring(0, 15) : value;
+    print("limtChar => $result");
+    return result;
   }
 
   @override

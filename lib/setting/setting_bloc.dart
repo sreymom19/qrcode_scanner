@@ -14,6 +14,7 @@ import '../preference/printer_ip_pref.dart';
 class SettingBloc extends ChangeNotifier {
   final DatabaseHelper _db = DatabaseHelper.instance;
   TextEditingController printerIpController = TextEditingController();
+  TextEditingController separateController = TextEditingController();
   PrinterOption? printerOption = PrinterOption.wifi;
   bool? isShouldQrCodePrint = false;
 
@@ -46,6 +47,10 @@ class SettingBloc extends ChangeNotifier {
 
   void savePrinterIp(String ipAddress) {
     setPrinterIP(ipAddress);
+  }
+
+  void saveSeparate(String devide) {
+    setSeperate(devide);
   }
 
   void onShouldQrCodePrintChecked(bool? value) {
@@ -81,7 +86,7 @@ class SettingBloc extends ChangeNotifier {
 
     /// Set column name
     sheet.getRangeByName("A2").setText("ID");
-    sheet.getRangeByName("B2").setText("Prefix");
+    // sheet.getRangeByName("B2").setText("Prefix");
     sheet.getRangeByName("C2").setText("Name");
     sheet.getRangeByName("D2").setText("Company");
     sheet.getRangeByName("E2").setText("Position");
@@ -101,7 +106,7 @@ class SettingBloc extends ChangeNotifier {
       sheet.getRangeByName("A$rowIndex").autoFit();
 
       /// Column of Name
-      _bindDataToColumn(sheet, "B$rowIndex", data[index].prefix);
+      //_bindDataToColumn(sheet, "B$rowIndex", data[index].prefix);
 
       /// Column of Name
       _bindDataToColumn(sheet, "C$rowIndex", data[index].name);

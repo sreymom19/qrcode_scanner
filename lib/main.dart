@@ -33,6 +33,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final MainBloc _bloc = MainBloc();
+
   final MobileScannerController cameraController = MobileScannerController();
   bool _screenOpened = false;
 
@@ -72,31 +73,50 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         body: Column(
           children: [
+            Padding(
+              padding: const EdgeInsets.only(top: 20),
+              child: Image.asset(
+                'images/epenh_logo.png',
+                width: 200,
+              ),
+            ),
             Expanded(
               child: Center(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(40),
-                  child: SizedBox(
-                    width: 300,
-                    height: 300,
-                    child: MobileScanner(
-                      allowDuplicates: true,
-                      controller: cameraController,
-                      onDetect: _foundBarcode,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text('Scan QR Code'),
+                    const SizedBox(height: 10),
+                    Center(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(40),
+                        child: SizedBox(
+                          width: 300,
+                          height: 300,
+                          child: MobileScanner(
+                            allowDuplicates: false,
+                            controller: cameraController,
+                            onDetect: _foundBarcode,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),
             InkWell(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => MainForm(
-                          bloc: _bloc,
-                          screenClosed: _screenWasClosed,
-                        )),
-              ),
+              onTap: () {
+                _bloc.clear();
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => MainForm(
+                            bloc: _bloc,
+                            screenClosed: _screenWasClosed,
+                          )),
+                );
+              },
               child: Container(
                 alignment: Alignment.center,
                 height: 50,
@@ -119,20 +139,24 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _foundBarcode(Barcode barcode, MobileScannerArguments? arguments) {
-    if (!_screenOpened) {
-      final String code = barcode.rawValue ?? "----";
-      debugPrint("Barcode found! $code");
-      _screenOpened = true;
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MainForm(
-            bloc: _bloc,
-            screenClosed: _screenWasClosed,
-            value: code,
+    debugPrint("Barcode found! ${barcode.rawValue}");
+    if (barcode.rawValue?.contains(";") == true) {
+      if (!_screenOpened) {
+        final String code = barcode.rawValue ?? "----";
+        _screenOpened = true;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => MainForm(
+              bloc: _bloc,
+              screenClosed: _screenWasClosed,
+              value: code,
+            ),
           ),
-        ),
-      );
+        );
+      }
+    } else {
+      _bloc.toastMsg(context, "Invalid QR Code");
     }
   }
 

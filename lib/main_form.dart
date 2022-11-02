@@ -3,6 +3,7 @@ import 'package:visitor_qr_code_scanner/main_bloc.dart';
 import 'package:visitor_qr_code_scanner/setting/setting.dart';
 
 class MainForm extends StatefulWidget {
+  
   final MainBloc bloc;
   final String? value;
   final Function() screenClosed;
@@ -19,7 +20,6 @@ class MainForm extends StatefulWidget {
 }
 
 class _MainFormState extends State<MainForm> {
-
   @override
   void initState() {
     if (widget.value != null) {
@@ -78,10 +78,10 @@ class _MainFormState extends State<MainForm> {
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.w600,
-                          color: Colors.blue,
+                          color: Colors.green,
                         ),
                       ),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 35),
                       TextFormField(
                         inputFormatters: [UppercaseTxt()],
                         style:
@@ -153,13 +153,14 @@ class _MainFormState extends State<MainForm> {
                               TextStyle(color: Colors.black38, fontSize: 15),
                         ),
                       ),
-                      const SizedBox(height: 5),
+                      const SizedBox(height: 50),
                       SizedBox(
                         width: double.infinity,
                         height: 70,
                         child: TextButton.icon(
                           onPressed: () {
                             widget.bloc.printInfo(context);
+                            
                           },
                           style: TextButton.styleFrom(
                             backgroundColor: Colors.blue,
@@ -174,6 +175,8 @@ class _MainFormState extends State<MainForm> {
                           ),
                         ),
                       ),
+                      const SizedBox(height: 80),
+                      Image.asset('images/epenh_logo.png', width: 120),
                     ],
                   ),
                 ),
