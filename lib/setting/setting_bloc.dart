@@ -8,6 +8,7 @@ import 'package:visitor_qr_code_scanner/preference/printer_option_pref.dart';
 import 'package:visitor_qr_code_scanner/preference/qrcode_pref.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:syncfusion_flutter_xlsio/xlsio.dart';
+import 'package:visitor_qr_code_scanner/preference/seperate_pref.dart';
 
 import '../preference/printer_ip_pref.dart';
 
@@ -49,8 +50,8 @@ class SettingBloc extends ChangeNotifier {
     setPrinterIP(ipAddress);
   }
 
-  void saveSeparate(String devide) {
-    setSeperate(devide);
+  void saveSeparate(String split) {
+    setSeparate(split);
   }
 
   void onShouldQrCodePrintChecked(bool? value) {

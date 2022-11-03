@@ -3,6 +3,7 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:visitor_qr_code_scanner/main_bloc.dart';
 import 'package:visitor_qr_code_scanner/main_form.dart';
 import 'package:visitor_qr_code_scanner/setting/setting.dart';
+import 'package:visitor_qr_code_scanner/setting/setting_bloc.dart';
 
 void main() async {
   runApp(const MyApp());
@@ -33,6 +34,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final MainBloc _bloc = MainBloc();
+  final SettingBloc _split = SettingBloc();
 
   final MobileScannerController cameraController = MobileScannerController();
   bool _screenOpened = false;
@@ -140,24 +142,26 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _foundBarcode(Barcode barcode, MobileScannerArguments? arguments) {
     debugPrint("Barcode found! ${barcode.rawValue}");
-    if (barcode.rawValue?.contains(";") == true) {
-      if (!_screenOpened) {
-        final String code = barcode.rawValue ?? "----";
-        _screenOpened = true;
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => MainForm(
-              bloc: _bloc,
-              screenClosed: _screenWasClosed,
-              value: code,
+    _bloc.isValidQrCode(barcode.rawValue).then((value) {
+      if (value) {
+        if (!_screenOpened) {
+          final String code = barcode.rawValue ?? "----";
+          _screenOpened = true;
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => MainForm(
+                bloc: _bloc,
+                screenClosed: _screenWasClosed,
+                value: code,
+              ),
             ),
-          ),
-        );
+          );
+        }
+      } else {
+        _bloc.toastMsg(context, "Invalid QR Code");
       }
-    } else {
-      _bloc.toastMsg(context, "Invalid QR Code");
-    }
+    });
   }
 
   void _screenWasClosed() {

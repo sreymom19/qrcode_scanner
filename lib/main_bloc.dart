@@ -10,6 +10,7 @@ import 'package:visitor_qr_code_scanner/model/model_db.dart';
 import 'package:visitor_qr_code_scanner/preference/printer_ip_pref.dart';
 import 'package:visitor_qr_code_scanner/preference/printer_option_pref.dart';
 import 'package:visitor_qr_code_scanner/preference/qrcode_pref.dart';
+import 'package:visitor_qr_code_scanner/preference/seperate_pref.dart';
 
 import 'db_helper.dart';
 import 'preference/printer_pref.dart';
@@ -51,13 +52,15 @@ class MainBloc extends ChangeNotifier {
   }
 
   void setTextController(String? code) {
-    final List<String>? result = code?.split(";");
-    nameController.text = result?.elementAt(0) ?? "";
-    companyController.text = result?.elementAt(1) ?? "";
-    positionController.text = result?.elementAt(2) ?? "";
-    typeController.text = result?.elementAt(3) ?? "";
-    emailController.text = result?.elementAt(4) ?? "";
-    phoneController.text = result!.length > 6 ? result[6] : result[5];
+    getSeparate().then((value) {
+      final List<String>? result = code?.split(value);
+      nameController.text = result?.elementAt(0) ?? "";
+      companyController.text = result?.elementAt(1) ?? "";
+      positionController.text = result?.elementAt(2) ?? "";
+      typeController.text = result?.elementAt(3) ?? "";
+      emailController.text = result?.elementAt(4) ?? "";
+      phoneController.text = result!.length > 6 ? result[6] : result[5];
+    });
   }
 
   void insertToDB() async {
@@ -162,7 +165,7 @@ class MainBloc extends ChangeNotifier {
       printer.text(_limitChar(item?.company), styles: posStyle);
       if (isChecked == true) {
         printer.qrcode(
-          '${item?.name}/${item?.position}/${item?.company}/${item?.type}/${item?.email}/${item?.phone}',
+          '${item?.name}${item?.position}${item?.company}${item?.type}${item?.email}${item?.phone}',
           size: QRSize.Size5,
         );
       }
@@ -207,7 +210,7 @@ class MainBloc extends ChangeNotifier {
     bytes += generator.text(_limitChar(data.company), styles: posStyle);
     if (isChecked == true) {
       bytes += generator.qrcode(
-        '${data.name}/${data.position}/${data.company}/${data.type}/${data.email}/${data.phone}',
+        '${data.name}${data.position}${data.company}${data.type}${data.email}${data.phone}',
         size: QRSize.Size5,
       );
     }
@@ -235,6 +238,12 @@ class MainBloc extends ChangeNotifier {
     emailController.dispose();
     phoneController.dispose();
     super.dispose();
+  }
+
+  Future<bool> isValidQrCode(String? code) async {
+    final value = await getSeparate();
+    if (code?.contains(value) == true ) return true;
+    return false;
   }
 }
 

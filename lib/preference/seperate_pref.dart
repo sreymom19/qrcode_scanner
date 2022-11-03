@@ -7,8 +7,9 @@ Future<void> setSeparate(String separate) async {
   await pref.setString(separateDevide, separate);
 }
 
-Future<void> getSeparate() async {
+Future<String> getSeparate() async {
   SharedPreferences pref = await SharedPreferences.getInstance();
   final result = pref.getString(separateDevide);
+  if (result == null) return "/";
   return result;
 }

@@ -25,7 +25,6 @@ class _SettingPageState extends State<SettingPage> {
   final PrinterBluetoothManager _printerManager = PrinterBluetoothManager();
   List<PrinterBluetooth> _devices = [];
   String? _deviceMsg;
-  
 
   @override
   void initState() {
@@ -185,13 +184,13 @@ class _SettingPageState extends State<SettingPage> {
                 child: TextField(
                   controller: _bloc.separateController,
                   decoration: const InputDecoration(
-                    hintText: 'Devide Word by / ;',
-                    hintStyle:
-                                TextStyle(color: Colors.black38, fontSize: 15),       
+                    hintText: 'Split By / ;',
+                    hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
                   ),
                   textInputAction: TextInputAction.done,
                   onSubmitted: (value) {
-                    _bloc
+                    _bloc.saveSeparate(value);
+                    _bloc.toastMsg(context, 'Split successfully');
                   },
                 ),
               ),
