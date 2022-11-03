@@ -53,229 +53,235 @@ class _SettingPageState extends State<SettingPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Setting'),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Padding(padding: EdgeInsets.only(top: 20)),
-              const Text(
-                "Select Printer Option:",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Row(
-                children: [
-                  Row(
-                    children: [
-                      AnimatedBuilder(
-                        animation: _bloc,
-                        builder: (context, child) => Radio(
-                          value: PrinterOption.wifi,
-                          groupValue: _bloc.printerOption,
-                          onChanged: (value) => _bloc.selectedPrinterOption(
-                            context,
-                            value,
-                          ),
-                        ),
-                      ),
-                      const Text('Network'),
-                    ],
+    return WillPopScope(
+      onWillPop: () async {
+        Navigator.pop(context);
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Setting'),
+        ),
+        body: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(padding: EdgeInsets.only(top: 20)),
+                const Text(
+                  "Select Printer Option:",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
                   ),
-                  Row(
-                    children: [
-                      AnimatedBuilder(
-                        animation: _bloc,
-                        builder: (context, child) => Radio(
-                          value: PrinterOption.bluetooth,
-                          groupValue: _bloc.printerOption,
-                          onChanged: (value) => _bloc.selectedPrinterOption(
-                            context,
-                            value,
-                          ),
-                        ),
-                      ),
-                      const Text('Bluetooth'),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "Setup Printer Option:",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
                 ),
-              ),
-              AnimatedBuilder(
-                animation: _bloc,
-                builder: (context, child) => _bloc.printerOption ==
-                        PrinterOption.wifi
-                    ? Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: TextField(
-                          controller: _bloc.printerIpController,
-                          decoration: const InputDecoration(
-                            hintText: 'Enter Printer IP Address',
-                            hintStyle:
-                                TextStyle(color: Colors.black38, fontSize: 15),
-                          ),
-                          textInputAction: TextInputAction.done,
-                          onSubmitted: (value) {
-                            _bloc.savePrinterIp(value);
-                            _bloc.toastMsg(context, "Select Wi-Fi Printer");
-                          },
-                        ),
-                      )
-                    : _devices.isEmpty
-                        ? Center(
-                            child: Text(_deviceMsg ?? ""),
-                          )
-                        : ListView.builder(
-                            shrinkWrap: true,
-                            itemBuilder: ((context, index) {
-                              return Column(
-                                children: [
-                                  ListTile(
-                                    leading: const Icon(Icons.print),
-                                    title: Text(_devices[index].name ?? ''),
-                                    subtitle:
-                                        Text(_devices[index].address ?? ''),
-                                    onTap: () {
-                                      final printer = Printer(
-                                        name: _devices[index].name,
-                                        address: _devices[index].address,
-                                        type: _devices[index].type,
-                                      );
-                                      selectedPrinter(printer);
-                                      _bloc.toastMsg(
-                                        context,
-                                        "Select Bluetooth Printer",
-                                      );
-                                    },
-                                  ),
-                                  const Divider(
-                                    height: 0.5,
-                                    color: Colors.grey,
-                                  )
-                                ],
-                              );
-                            }),
-                            itemCount: _devices.length,
-                          ),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              const Text(
-                'Seperate ',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: TextField(
-                  controller: _bloc.separateController,
-                  decoration: const InputDecoration(
-                    hintText: 'Split By / ;',
-                    hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
-                  ),
-                  textInputAction: TextInputAction.done,
-                  onSubmitted: (value) {
-                    _bloc.saveSeparate(value);
-                    _bloc.toastMsg(context, 'Split successfully');
-                  },
-                ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                'Select QR Code',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                Row(
                   children: [
-                    SizedBox(
-                      width: 32,
-                      height: 32,
-                      child: AnimatedBuilder(
-                        animation: _bloc,
-                        builder: (context, child) => Checkbox(
-                          value: _bloc.isShouldQrCodePrint,
-                          onChanged: (bool? value) =>
-                              _bloc.onShouldQrCodePrintChecked(
-                            value,
+                    Row(
+                      children: [
+                        AnimatedBuilder(
+                          animation: _bloc,
+                          builder: (context, child) => Radio(
+                            value: PrinterOption.wifi,
+                            groupValue: _bloc.printerOption,
+                            onChanged: (value) => _bloc.selectedPrinterOption(
+                              context,
+                              value,
+                            ),
                           ),
                         ),
-                      ),
+                        const Text('Network'),
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    const Text(
-                      'QR Code',
-                      style: TextStyle(fontSize: 16),
+                    Row(
+                      children: [
+                        AnimatedBuilder(
+                          animation: _bloc,
+                          builder: (context, child) => Radio(
+                            value: PrinterOption.bluetooth,
+                            groupValue: _bloc.printerOption,
+                            onChanged: (value) => _bloc.selectedPrinterOption(
+                              context,
+                              value,
+                            ),
+                          ),
+                        ),
+                        const Text('Bluetooth'),
+                      ],
                     ),
                   ],
                 ),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-              Container(
-                width: double.infinity,
-                height: 40,
-                color: Colors.blue,
-                alignment: Alignment.centerLeft,
-                padding: const EdgeInsets.only(left: 20),
-                child: const Text(
-                  'Data Store',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
+                const SizedBox(height: 20),
+                const Text(
+                  "Setup Printer Option:",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: () => _bloc.getVisitors(context),
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                      ),
-                      child: const Text(
-                        'Download File',
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        _showMyDialog(context);
-                      },
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.red,
-                      ),
-                      child: const Text(
-                        'Clear Data',
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                    ),
-                  ],
+                AnimatedBuilder(
+                  animation: _bloc,
+                  builder: (context, child) => _bloc.printerOption ==
+                          PrinterOption.wifi
+                      ? Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                          child: TextField(
+                            controller: _bloc.printerIpController,
+                            decoration: const InputDecoration(
+                              hintText: 'Enter Printer IP Address',
+                              hintStyle: TextStyle(
+                                  color: Colors.black38, fontSize: 15),
+                            ),
+                            textInputAction: TextInputAction.done,
+                            onSubmitted: (value) {
+                              _bloc.savePrinterIp(value);
+                              _bloc.toastMsg(context, "Select Wi-Fi Printer");
+                            },
+                          ),
+                        )
+                      : _devices.isEmpty
+                          ? Center(
+                              child: Text(_deviceMsg ?? ""),
+                            )
+                          : ListView.builder(
+                              shrinkWrap: true,
+                              itemBuilder: ((context, index) {
+                                return Column(
+                                  children: [
+                                    ListTile(
+                                      leading: const Icon(Icons.print),
+                                      title: Text(_devices[index].name ?? ''),
+                                      subtitle:
+                                          Text(_devices[index].address ?? ''),
+                                      onTap: () {
+                                        final printer = Printer(
+                                          name: _devices[index].name,
+                                          address: _devices[index].address,
+                                          type: _devices[index].type,
+                                        );
+                                        selectedPrinter(printer);
+                                        _bloc.toastMsg(
+                                          context,
+                                          "Select Bluetooth Printer",
+                                        );
+                                      },
+                                    ),
+                                    const Divider(
+                                      height: 0.5,
+                                      color: Colors.grey,
+                                    )
+                                  ],
+                                );
+                              }),
+                              itemCount: _devices.length,
+                            ),
                 ),
-              ),
-            ],
+                const SizedBox(
+                  height: 20,
+                ),
+                const Text(
+                  'Seperate ',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: TextField(
+                    controller: _bloc.separateController,
+                    decoration: const InputDecoration(
+                      hintText: 'Split By / ;',
+                      hintStyle: TextStyle(color: Colors.black38, fontSize: 15),
+                    ),
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (value) {
+                      _bloc.saveSeparate(value);
+                      _bloc.toastMsg(context, 'Split successfully');
+                    },
+                  ),
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  'Select QR Code',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(
+                  height: 10,
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: 32,
+                        height: 32,
+                        child: AnimatedBuilder(
+                          animation: _bloc,
+                          builder: (context, child) => Checkbox(
+                            value: _bloc.isShouldQrCodePrint,
+                            onChanged: (bool? value) =>
+                                _bloc.onShouldQrCodePrintChecked(
+                              value,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      const Text(
+                        'QR Code',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(
+                  height: 40,
+                ),
+                Container(
+                  width: double.infinity,
+                  height: 40,
+                  color: Colors.blue,
+                  alignment: Alignment.centerLeft,
+                  padding: const EdgeInsets.only(left: 20),
+                  child: const Text(
+                    'Data Store',
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      TextButton(
+                        onPressed: () => _bloc.getVisitors(context),
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.blue,
+                        ),
+                        child: const Text(
+                          'Download File',
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          _showMyDialog(context);
+                        },
+                        style: TextButton.styleFrom(
+                          backgroundColor: Colors.red,
+                        ),
+                        child: const Text(
+                          'Clear Data',
+                          style: TextStyle(color: Colors.white, fontSize: 20),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

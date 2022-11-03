@@ -31,6 +31,7 @@ class SettingBloc extends ChangeNotifier {
         }
       });
     });
+    getSeparate().then((value) => separateController.text = value);
 
     notifyListeners();
   }

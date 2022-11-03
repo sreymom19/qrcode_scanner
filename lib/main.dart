@@ -3,7 +3,6 @@ import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:visitor_qr_code_scanner/main_bloc.dart';
 import 'package:visitor_qr_code_scanner/main_form.dart';
 import 'package:visitor_qr_code_scanner/setting/setting.dart';
-import 'package:visitor_qr_code_scanner/setting/setting_bloc.dart';
 
 void main() async {
   runApp(const MyApp());
@@ -34,7 +33,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final MainBloc _bloc = MainBloc();
-  final SettingBloc _split = SettingBloc();
 
   final MobileScannerController cameraController = MobileScannerController();
   bool _screenOpened = false;
