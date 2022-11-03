@@ -38,9 +38,7 @@ class MainBloc extends ChangeNotifier {
 
   ModelDB? item;
   bool? isChecked = false;
-
-  //List<String> prefixes = ["Mr", "Ms", "Mrs"];
-  //String? valuePre;
+  String seperator = "/";
 
   void init(BuildContext context) async {
     this.context = context;
@@ -74,6 +72,7 @@ class MainBloc extends ChangeNotifier {
   }
 
   void printInfo(BuildContext context) {
+    getSeparate().then((value) => seperator = value);
     if (_validateForm()) {
       _showLoading();
       item = ModelDB(
@@ -165,7 +164,7 @@ class MainBloc extends ChangeNotifier {
       printer.text(_limitChar(item?.company), styles: posStyle);
       if (isChecked == true) {
         printer.qrcode(
-          '${item?.name}${item?.position}${item?.company}${item?.type}${item?.email}${item?.phone}',
+          '${item?.name}$seperator${item?.position}$seperator${item?.company}$seperator${item?.type}$seperator${item?.email}$seperator${item?.phone}',
           size: QRSize.Size5,
         );
       }
@@ -210,7 +209,7 @@ class MainBloc extends ChangeNotifier {
     bytes += generator.text(_limitChar(data.company), styles: posStyle);
     if (isChecked == true) {
       bytes += generator.qrcode(
-        '${data.name}${data.position}${data.company}${data.type}${data.email}${data.phone}',
+        '${data.name}$seperator${data.position}$seperator${data.company}$seperator${data.type}$seperator${data.email}$seperator${data.phone}',
         size: QRSize.Size5,
       );
     }
@@ -242,7 +241,7 @@ class MainBloc extends ChangeNotifier {
 
   Future<bool> isValidQrCode(String? code) async {
     final value = await getSeparate();
-    if (code?.contains(value) == true ) return true;
+    if (code?.contains(value) == true) return true;
     return false;
   }
 }
