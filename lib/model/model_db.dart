@@ -43,28 +43,28 @@ void main() async {
 class ModelDB {
   final int? id;
   //final String prefix;
-  final String name;
-  final String position;
-  final String company;
-  final String type;
-  final String email;
-  final String phone;
+  final String? name;
+  final String? position;
+  final String? company;
+  final String? type;
+  final String? email;
+  final String? phone;
 
   ModelDB({
     this.id,
     //required this.prefix,
-    required this.name,
-    required this.position,
-    required this.company,
-    required this.type,
-    required this.email,
-    required this.phone,
+    this.name,
+    this.position,
+    this.company,
+    this.type,
+    this.email,
+    this.phone,
   });
 
   factory ModelDB.fromMap(Map<String, dynamic> map) {
     return ModelDB(
       id: map['id'],
-     // prefix: map['prefix'],
+      // prefix: map['prefix'],
       name: map['name'],
       position: map['position'],
       company: map['company'],

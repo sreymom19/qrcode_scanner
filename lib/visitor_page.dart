@@ -83,7 +83,7 @@ class _VisitorPageState extends State<VisitorPage> {
                   Column(
                     children: items
                         .map((visitor) => Text(
-                              visitor.name,
+                              visitor.name!,
                               style: const TextStyle(fontSize: 20),
                             ))
                         .toList(),
@@ -94,7 +94,7 @@ class _VisitorPageState extends State<VisitorPage> {
                   Column(
                     children: items
                         .map((visitor) => Text(
-                              visitor.position,
+                              visitor.position!,
                               style: const TextStyle(fontSize: 20),
                             ))
                         .toList(),
@@ -103,7 +103,7 @@ class _VisitorPageState extends State<VisitorPage> {
                   Column(
                     children: items
                         .map((visitor) => Text(
-                              visitor.company,
+                              visitor.company!,
                               style: const TextStyle(fontSize: 20),
                             ))
                         .toList(),

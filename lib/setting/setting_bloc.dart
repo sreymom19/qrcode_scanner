@@ -111,22 +111,22 @@ class SettingBloc extends ChangeNotifier {
       //_bindDataToColumn(sheet, "B$rowIndex", data[index].prefix);
 
       /// Column of Name
-      _bindDataToColumn(sheet, "C$rowIndex", data[index].name);
+      _bindDataToColumn(sheet, "C$rowIndex", data[index].name!);
 
       /// Column of Company
-      _bindDataToColumn(sheet, "D$rowIndex", data[index].company);
+      _bindDataToColumn(sheet, "D$rowIndex", data[index].company!);
 
       /// Column of Position
-      _bindDataToColumn(sheet, "E$rowIndex", data[index].position);
+      _bindDataToColumn(sheet, "E$rowIndex", data[index].position!);
 
       /// Column of Type
-      _bindDataToColumn(sheet, "F$rowIndex", data[index].type);
+      _bindDataToColumn(sheet, "F$rowIndex", data[index].type!);
 
       /// Column of Email
-      _bindDataToColumn(sheet, "G$rowIndex", data[index].email);
+      _bindDataToColumn(sheet, "G$rowIndex", data[index].email!);
 
       /// Column of Phone
-      _bindDataToColumn(sheet, "H$rowIndex", data[index].phone);
+      _bindDataToColumn(sheet, "H$rowIndex", data[index].phone!);
     }
     final List<int> bytes = workbook.saveAsStream();
     workbook.dispose();
