@@ -18,8 +18,8 @@ import 'preference/printer_pref.dart';
 const PosStyles posStyle = PosStyles(
   bold: true,
   align: PosAlign.center,
-  height: PosTextSize.size3,
-  width: PosTextSize.size3,
+  height: PosTextSize.size2,
+  width: PosTextSize.size2,
   fontType: PosFontType.fontA,
 );
 
@@ -30,8 +30,8 @@ class MainBloc extends ChangeNotifier {
   MobileScannerController cameraController = MobileScannerController();
 
   final TextEditingController nameController = TextEditingController();
-  final TextEditingController companyController = TextEditingController();
   final TextEditingController positionController = TextEditingController();
+  final TextEditingController companyController = TextEditingController();
   final TextEditingController typeController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController phoneController = TextEditingController();
@@ -52,9 +52,10 @@ class MainBloc extends ChangeNotifier {
   void setTextController(String? code) {
     getSeparate().then((value) {
       final List<String>? result = code?.split(value);
+      print("result => $result");
       nameController.text = result?.elementAt(0) ?? "";
-      companyController.text = result?.elementAt(1) ?? "";
-      positionController.text = result?.elementAt(2) ?? "";
+      positionController.text = result?.elementAt(1) ?? "";
+      companyController.text = result?.elementAt(2) ?? "";
       typeController.text = result?.elementAt(3) ?? "";
       emailController.text = result?.elementAt(4) ?? "";
       phoneController.text = result!.length > 6 ? result[6] : result[5];
@@ -73,35 +74,31 @@ class MainBloc extends ChangeNotifier {
 
   void printInfo(BuildContext context) {
     getSeparate().then((value) => seperator = value);
-    if (_validateForm()) {
-      _showLoading();
-      item = ModelDB(
-        name: nameController.text.trim(),
-        position: positionController.text.trim(),
-        company: companyController.text.trim(),
-        type: typeController.text.trim(),
-        email: emailController.text.trim(),
-        phone: phoneController.text.trim(),
-      );
-      insertToDB();
-      getQrCode().then(
-        (value) {
-          print("isQrPrinte => $value");
-          isChecked = value;
-          getPrinterOption().then((value) {
-            if (value == PrinterOption.bluetooth.name) {
-              _bluetoothPrint();
-            } else {
-              _wifiPrint();
-            }
-          });
-        },
-      );
-      clear();
-      toastMsg(context, "Print Successfully");
-    } else {
-      toastMsg(context, "Please enter information before print");
-    }
+    _showLoading();
+    item = ModelDB(
+      name: nameController.text.trim(),
+      position: positionController.text.trim(),
+      company: companyController.text.trim(),
+      type: typeController.text.trim(),
+      email: emailController.text.trim(),
+      phone: phoneController.text.trim(),
+    );
+    insertToDB();
+    getQrCode().then(
+      (value) {
+        print("isQrPrinte => $value");
+        isChecked = value;
+        getPrinterOption().then((value) {
+          if (value == PrinterOption.bluetooth.name) {
+            _bluetoothPrint();
+          } else {
+            _wifiPrint();
+          }
+        });
+      },
+    );
+    clear();
+    toastMsg(context, "Print Successfully");
   }
 
   void clear() {
@@ -165,10 +162,10 @@ class MainBloc extends ChangeNotifier {
       if (isChecked == true) {
         printer.qrcode(
           '${item?.name}$seperator${item?.position}$seperator${item?.company}$seperator${item?.type}$seperator${item?.email}$seperator${item?.phone}',
-          size: QRSize.Size5,
+          size: QRSize.Size4,
         );
       }
-      printer.text('TRADE VISITOR', styles: posStyle);
+      //printer.text('TRADE VISITOR', styles: posStyle);
       printer.feed(1);
       printer.cut();
       printer.disconnect();
@@ -210,20 +207,20 @@ class MainBloc extends ChangeNotifier {
     if (isChecked == true) {
       bytes += generator.qrcode(
         '${data.name}$seperator${data.position}$seperator${data.company}$seperator${data.type}$seperator${data.email}$seperator${data.phone}',
-        size: QRSize.Size5,
+        size: QRSize.Size4,
       );
     }
-    bytes += generator.text(
+    /*bytes += generator.text(
       "TRADE VISITOR",
       styles: posStyle,
-    );
+    );*/
     bytes += generator.feed(1);
     bytes += generator.cut();
     return bytes;
   }
 
   String _limitChar(String? value) {
-    final result = value!.length > 15 ? value.substring(0, 15) : value;
+    final result = value!.length > 18 ? value.substring(0, 18) : value;
     print("limtChar => $result");
     return result;
   }
@@ -231,8 +228,8 @@ class MainBloc extends ChangeNotifier {
   @override
   void dispose() {
     nameController.dispose();
-    companyController.dispose();
     positionController.dispose();
+    companyController.dispose();
     typeController.dispose();
     emailController.dispose();
     phoneController.dispose();
